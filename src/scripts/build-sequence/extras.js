@@ -7,16 +7,6 @@ const at = (m, x, y, z) => { m.position.set(x, y, z); return m; };
 export function buildFurniture(scene, M) {
   const knob = () => { const k = new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 8), M.metal); k.castShadow = true; return k; };
 
-  // مراية بلا envMap: نرسمو انعكاس مزيف (ضو مائل) بتدرج لوني
-  const cv = document.createElement('canvas'); cv.width = 64; cv.height = 256;
-  const g2 = cv.getContext('2d');
-  const grad = g2.createLinearGradient(0, 0, 64, 256);
-  grad.addColorStop(0, '#b9c9d3'); grad.addColorStop(0.28, '#e9f1f5'); grad.addColorStop(0.36, '#8fa3af');
-  grad.addColorStop(0.62, '#a9bac5'); grad.addColorStop(0.7, '#dfeaf0'); grad.addColorStop(1, '#6f8493');
-  g2.fillStyle = grad; g2.fillRect(0, 0, 64, 256);
-  const mTex = new THREE.CanvasTexture(cv); mTex.colorSpace = THREE.SRGBColorSpace;
-  const mirrorMat = new THREE.MeshStandardMaterial({ map: mTex, color: 0xffffff, metalness: 0.25, roughness: 0.06, emissive: 0x7f95a3, emissiveMap: mTex, emissiveIntensity: 0.35 });
-
   const wardrobe = new THREE.Group(); wardrobe.name = 'wardrobe';
   const ww = 1.0, wh = 1.95, wd = 0.55;
   wardrobe.add(at(rb(0.03, wh, wd, M.stainPine), -ww / 2, wh / 2, 0), at(rb(0.03, wh, wd, M.stainPine), ww / 2, wh / 2, 0));
@@ -27,11 +17,6 @@ export function buildFurniture(scene, M) {
     const frame = at(rb(ww / 2 - 0.08, wh - 0.3, 0.008, M.stainPine, 0.002), s * (ww / 4), wh / 2 + 0.02, wd / 2 + 0.014);
     const k = at(knob(), s * 0.04, wh / 2, wd / 2 + 0.03);
     wardrobe.add(door, frame, k);
-    // مراية على الباب: لوح عاكس بإطار معدني رقيق
-    const mw = ww / 2 - 0.15, mh = wh - 0.42;
-    const mirror = at(new THREE.Mesh(new THREE.PlaneGeometry(mw, mh), mirrorMat), s * (ww / 4), wh / 2 + 0.02, wd / 2 + 0.02);
-    const mFrame = at(rb(mw + 0.03, mh + 0.03, 0.004, M.metal, 0.001), s * (ww / 4), wh / 2 + 0.02, wd / 2 + 0.017);
-    wardrobe.add(mFrame, mirror);
   });
 
   const drawerBox = (name, w, h, d, n, frameMat, panelMat) => {

@@ -6,8 +6,7 @@ import { buildBed, buildPile } from './model.js';
 import { createSawdust, createMotes } from './particles.js';
 import { createWorker } from './worker.js';
 import { buildFurniture, buildTruck } from './extras.js';
-import { createMap3D } from './map3d.js';
-import { TOTAL_KM } from './mapdata.js';
+import { createRoad } from './road.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
@@ -43,12 +42,9 @@ export function initBuildSequence(section) {
   const statsBox = $('.stats');
   const statNums = $$('.stats [data-to]');
   const statVals = { v: 0 };
-  const mapCam = { follow: 0, hq: 0 };
   const routeProg = { v: 0 };
-  const labelsEl = $('.maplabels');
-  const stopEl = $('[data-mapstop]');
-  const barEl = $('[data-mapbar]');
-  $('[data-kmtotal]').textContent = TOTAL_KM.toLocaleString('fr-FR');
+  const roadState = { enter: 0, hand: 0 };
+  const road = createRoad(mapview, { isMobile });
 
   // ---------- المشهد ----------
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile, alpha: false, powerPreference: 'high-performance' });
@@ -130,9 +126,6 @@ export function initBuildSequence(section) {
   blade.position.set(-0.35, 0.16, 0.15);
   pile.add(blade);
 
-  let map = null;
-  let mapFailed = false;
-
   // ---------- الكاميرا ----------
   const cam = { angle: 0.75, dist: 2.9, height: 1.4, ty: 0.08, tx: 0 };
   const target = new THREE.Vector3();
@@ -156,7 +149,6 @@ export function initBuildSequence(section) {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     renderer.setSize(w, h, false);
     applyView(camera, w, h);
-    if (map) applyView(map.camera, w, h);
   }
   addEventListener('resize', resize);
   resize();
@@ -315,26 +307,23 @@ export function initBuildSequence(section) {
     .to(bedGroup.position, { x: -16 - 0.7, duration: 1.0, ease: 'power2.in' }, 19.7)
     .to(wheelSpin, { v: 75, duration: 1.0, ease: 'power2.in' }, 19.7);
 
-  // 9. خريطة الجزائر
+  // 9. الطريق: الكاميو يخرج من الورشة، يوصل للزبون ويسلّم السرير (مشهد قصير وخفيف)
   chapter(8, 20.6);
-  // الكانفاس يطفى لحظة (الكاميو خرج من الورشة)، نبدلو المشهد، ويرجع يبان بالخريطة 3D
-  tl.to(canvas, { opacity: 0, duration: 0.3, ease: 'none' }, 20.2)
+  tl.to(canvas, { opacity: 0, duration: 0.3, ease: 'none' }, 20.6)
     .to('.build .dim', { opacity: 0, duration: 0.3 }, 20.2)
-    .to(canvas, { opacity: 1, duration: 0.5, ease: 'none' }, 20.55)
-    .to(mapview, { autoAlpha: 1, duration: 0.5 }, 20.6)
-    .to(maphud, { opacity: 1, duration: 0.3 }, 20.9)
-    .to(mapCam, { follow: 1, duration: 0.6, ease: 'power2.inOut' }, 20.8)   // زوم على الكاميو في الانطلاق
-    .to(routeProg, { v: 1, duration: 10.3, ease: 'none' }, 21.3)   // حوالي شاشتين سكرول
-    .to(mapCam, { follow: 0, duration: 1.5, ease: 'power2.inOut' }, 32.4)  // الكاميو يوصل ويوقف شوية، ومن بعد زوم أوت  // يرجع يبين الطريق كامل
-    .to(badge, { opacity: 1, duration: 0.3 }, 31.4);
+    .to(mapview, { autoAlpha: 1, duration: 0.6 }, 20.4)
+    .to(maphud, { opacity: 1, duration: 0.3 }, 21.0)
+    .to(roadState, { enter: 1, duration: 1.0, ease: 'power2.out' }, 20.9)
+    .to(routeProg, { v: 1, duration: 4.2, ease: 'none' }, 21.4)
+    .to(badge, { opacity: 1, duration: 0.3 }, 25.0)
+    .to(roadState, { hand: 1, duration: 1.6, ease: 'none' }, 25.7);
 
-  // 10. ندخلو في الخريطة: زوم على الورشة + الأرقام
-  chapter(9, 33.9);
-  tl.to(mapCam, { hq: 1, duration: 1.0, ease: 'power2.inOut' }, 33.9)
-    .to(maphud, { opacity: 0, duration: 0.3 }, 33.9)
-    .to(statsBox, { autoAlpha: 1, duration: 0.4 }, 34.4)
-    .to(statVals, { v: 1, duration: 1.2, ease: 'power1.out' }, 34.5)
-    .to({}, { duration: 1.4 }, 36.0);
+  // 10. أرقام الورشة: تبان مع التسليم (بلا سكرول زايد)
+  chapter(9, 26.6);
+  tl.to(maphud, { opacity: 0, duration: 0.3 }, 26.4)
+    .to(statsBox, { autoAlpha: 1, duration: 0.4 }, 26.6)
+    .to(statVals, { v: 1, duration: 1.0, ease: 'power1.out' }, 26.7)
+    .to({}, { duration: 0.7 }, 27.3);
 
   // ---------- ربط السكرول بالتايملاين ----------
   // المقدمة (المخطط، 0 → 3.1 في التايملاين) تاخذ غير 1.7 من السكرول، وباقي القصة بنفس السرعة.
@@ -351,7 +340,7 @@ export function initBuildSequence(section) {
     // على التيليفون: كل سحبة توقف عند نهاية فصل باش الأنيميشن ما يجريش
     snap: isMobile ? {
       snapTo: (v) => {
-        const stops = [0, 3.1, 4.6, 6.4, 8.8, 11.3, 13.0, 15.0, 17.0, 18.6, 19.7, 20.6, 24.0, 27.8, 31.6, 33.9, tl.duration()].map((t) => tToU(t) / total);
+        const stops = [0, 3.1, 4.6, 6.4, 8.8, 11.3, 13.0, 15.0, 17.0, 18.6, 19.7, 20.6, 23.4, 25.7, 26.6, tl.duration()].map((t) => tToU(t) / total);
         return stops.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
       },
       duration: { min: 1.2, max: 3 }, delay: 0.15, ease: 'power1.inOut', inertia: false,
@@ -395,31 +384,10 @@ export function initBuildSequence(section) {
     countEl.screws.textContent = screws;
   }
 
-  // ---------- الخريطة 3D ----------
-  // تتبنى وقت الفراغ بعد التحميل، وإذا ما ساليتش تتبنى أول ما نحتاجوها
-  function buildMap() {
-    if (map) return map;
-    map = createMap3D({ renderer, isMobile, labelsEl });
-    applyView(map.camera, canvas.clientWidth, canvas.clientHeight);
-    renderer.compile(map.scene, map.camera);
-    return map;
-  }
-  (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => {
-    try { buildMap(); } catch (e) { mapFailed = true; console.warn('map3d', e); }
-  }, { timeout: 4000 });
-
-  let lastT = 0, lastStop = '';
-  function updateMap(time) {
-    const m = buildMap();
-    const dt = Math.min(0.1, Math.max(0.001, time - lastT));
-    lastT = time;
-    const prog = routeProg.v;
-    m.update({ prog, follow: mapCam.follow, hq: mapCam.hq, time, dt });
-    barEl.style.transform = `scaleX(${prog.toFixed(4)})`;
-    kmEl.textContent = Math.round(prog * TOTAL_KM).toLocaleString('fr-FR');
-    let name = m.stops[0].name;
-    m.stops.forEach((st) => { if (st.name && prog > 0.001 && prog >= st.frac - 0.002) name = st.name; });
-    if (name !== lastStop) { lastStop = name; stopEl.textContent = name; }
+  // ---------- الطريق (DOM فقط، خفيف) ----------
+  let lastT = 0;
+  function updateRoad(time) {
+    road({ prog: routeProg.v, enter: roadState.enter, hand: roadState.hand, time });
     statNums.forEach((n) => { n.textContent = Math.round(+n.dataset.to * statVals.v).toLocaleString('fr-FR'); });
   }
 
@@ -431,8 +399,9 @@ export function initBuildSequence(section) {
     if (!visible) return;
     if (tl.time() < 3.4) updateHand();
     if (tl.time() < 2.9) return; // قبل ما يبان الـ 3D، ما نرسموش
-    if (tl.time() >= 20.5 && !mapFailed) {
-      try { updateMap(time); renderer.render(map.scene, map.camera); return; } catch (e) { mapFailed = true; console.warn('map3d', e); }
+    if (tl.time() >= 20.3) {
+      updateRoad(time);
+      if (tl.time() >= 21.0) return; // المشهد 3D مخبي، ما نرسموش
     }
     worker.update(time);
     T.wheels.forEach((w) => (w.rotation.y = -wheelSpin.v));

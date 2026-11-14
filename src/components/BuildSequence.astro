@@ -10,7 +10,7 @@ const chapters = [
   { title: 'مساحة تخزين مخفية', text: '', note: 'خفيفة في اليد' },
   { title: 'وماشي غير السرير', text: '', note: 'قولنا واش تحب' },
   { title: 'نحملوه بعناية', text: '', note: 'مغلف ومحمي' },
-  { title: 'نوصلو لأبعد نقطة في الجزائر', text: '', note: `التوصيل في ${stats.deliveryHours} ساعة كأقصى حد` },
+  { title: 'نوصلو لأبعد نقطة في الجزائر', text: '', note: `التوصيل ${stats.deliveryText}` },
   { title: 'أرقام الورشة', text: '', note: 'الثقة تتبنى بالخدمة' },
 ];
 ---
@@ -84,13 +84,73 @@ const chapters = [
 
     <canvas class="stage" aria-hidden="true"></canvas>
     <div class="mapview" aria-hidden="true">
-      <div class="maplabels"></div>
+      <div class="scene">
+        <div class="sky"><i class="sun"></i></div>
+        <div class="layer far"></div>
+        <div class="ground"></div>
+        <div class="layer mid"></div>
+        <div class="road"><i class="dash"></i></div>
+        <svg class="truck2d" viewBox="0 0 650 200" role="img" aria-label="الكاميو يوصل السرير للزبون">
+          <!-- الورشة (وراه، تروح مع الوقت) -->
+          <g class="g-work">
+            <rect x="478" y="88" width="150" height="68" fill="#d8c29a" stroke="#3A3A38" stroke-width="2" />
+            <path d="M468 88 L553 54 L638 88 Z" fill="#6E3B1C" stroke="#3A3A38" stroke-width="2" stroke-linejoin="round" />
+            <rect x="522" y="112" width="62" height="44" fill="#3a2a1c" />
+            <rect x="506" y="92" width="94" height="14" fill="#6E3B1C" /><text x="553" y="103" text-anchor="middle" class="tw">ورشة الشمامي</text>
+          </g>
+          <!-- دار الزبون (قدامو، تجي وتوقف) -->
+          <g class="g-home">
+            <rect x="478" y="92" width="140" height="64" fill="#efe3c6" stroke="#3A3A38" stroke-width="2" />
+            <path d="M466 94 L548 56 L630 94 Z" fill="#B3352B" stroke="#3A3A38" stroke-width="2" stroke-linejoin="round" />
+            <rect x="592" y="62" width="12" height="22" fill="#8a5a3a" />
+            <rect x="536" y="112" width="30" height="44" fill="#6E3B1C" /><circle cx="561" cy="136" r="2" fill="#ffd88a" />
+            <rect x="490" y="108" width="28" height="22" fill="#cfe3ea" stroke="#3A3A38" stroke-width="1.5" /><path d="M504 108 V130 M490 119 H518" stroke="#3A3A38" stroke-width="1.2" />
+            <rect x="582" y="108" width="28" height="22" fill="#cfe3ea" stroke="#3A3A38" stroke-width="1.5" /><path d="M596 108 V130 M582 119 H610" stroke="#3A3A38" stroke-width="1.2" />
+            <g class="g-person">
+              <rect x="512" y="128" width="14" height="28" rx="4" fill="#3d5a73" />
+              <circle cx="519" cy="120" r="8" fill="#d9a77a" />
+              <path class="arm" d="M526 132 L538 118" stroke="#d9a77a" stroke-width="4" stroke-linecap="round" />
+            </g>
+            <g class="g-ok"><circle cx="551" cy="34" r="15" fill="#2f7d4f" /><path d="M543 34 l6 6 l11 -12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" /></g>
+          </g>
+          <ellipse cx="215" cy="192" rx="190" ry="7" fill="rgba(30,26,22,.28)" />
+          <g class="g-truck">
+            <rect x="130" y="20" width="280" height="120" rx="6" fill="#e8e1d0" stroke="#3A3A38" stroke-width="2" />
+            <rect x="130" y="112" width="280" height="14" fill="#6E3B1C" />
+            <text x="270" y="68" text-anchor="middle" class="tt">Chemami Meuble Nadhir</text>
+            <text x="270" y="92" text-anchor="middle" class="ts">عين البيضة</text>
+            <path d="M130 140 V58 H98 Q86 58 80 70 L52 108 Q46 118 46 130 V140 Z" fill="#3d5a73" stroke="#26384a" stroke-width="2" />
+            <path d="M94 66 H122 V104 H66 L84 74 Q86 66 94 66 Z" fill="#1b252c" />
+            <rect x="46" y="140" width="364" height="14" fill="#2b241d" />
+            <rect x="34" y="126" width="16" height="22" rx="3" fill="#3A3A38" />
+            <circle cx="52" cy="118" r="6" fill="#ffd88a" />
+            <g class="g-bed">
+              <rect x="332" y="96" width="6" height="40" fill="#b98a55" stroke="#3A3A38" stroke-width="1.2" />
+              <rect x="338" y="116" width="66" height="10" fill="#efe3c6" stroke="#3A3A38" stroke-width="1.2" />
+              <rect x="338" y="126" width="66" height="8" fill="#d9b27a" stroke="#3A3A38" stroke-width="1.2" />
+              <rect x="340" y="134" width="5" height="6" fill="#b98a55" /><rect x="397" y="134" width="5" height="6" fill="#b98a55" />
+              <rect x="342" y="109" width="18" height="8" rx="3" fill="#fff" stroke="#3A3A38" stroke-width="1" />
+            </g>
+            <rect class="g-rdoor" x="403" y="24" width="8" height="114" fill="#cfc7b3" stroke="#3A3A38" stroke-width="1.5" />
+            <g class="wheel"><circle cx="112" cy="160" r="30" fill="#151311" /><circle cx="112" cy="160" r="14" fill="#8b8f93" /><path d="M112 146 V174 M98 160 H126" stroke="#3A3A38" stroke-width="3" /></g>
+            <g class="wheel"><circle cx="338" cy="160" r="30" fill="#151311" /><circle cx="338" cy="160" r="14" fill="#8b8f93" /><path d="M338 146 V174 M324 160 H352" stroke="#3A3A38" stroke-width="3" /></g>
+            <g class="wheel"><circle cx="268" cy="160" r="30" fill="#151311" /><circle cx="268" cy="160" r="14" fill="#8b8f93" /><path d="M268 146 V174 M254 160 H282" stroke="#3A3A38" stroke-width="3" /></g>
+          </g>
+        </svg>
+      </div>
       <div class="maphud mapcard">
-        <p class="mc-now"><span>الكاميو الآن في</span> <b data-mapstop>عين البيضة</b></p>
-        <div class="mc-ends"><span><i>A</i>عين البيضة</span><span><i>B</i>أبعد نقطة</span></div>
-        <div class="mc-bar"><span data-mapbar></span></div>
-        <p class="mc-km"><b data-kmcount dir="ltr">0</b> كم من <bdi data-kmtotal>0</bdi></p>
-        <p class="badge">توصيل في {stats.deliveryHours} ساعة كأقصى حد</p>
+        <svg class="mini" viewBox="0 0 100 100" aria-hidden="true">
+          <path class="m-out" />
+          <path class="m-route" pathLength="1" />
+          <path class="m-done" pathLength="1" />
+          <circle class="m-dot" r="3.2" />
+        </svg>
+        <div class="mc-info">
+          <p class="mc-now"><span>الكاميو الآن في</span> <b data-mapstop>عين البيضة</b></p>
+          <div class="mc-bar"><span data-mapbar></span></div>
+          <p class="mc-km"><b data-kmcount dir="ltr">0</b> كم من <bdi data-kmtotal>0</bdi></p>
+          <p class="badge">توصيل {stats.deliveryText}</p>
+        </div>
       </div>
       <ul class="stats">
         {stats.items.map((it) => (
@@ -122,7 +182,7 @@ const chapters = [
 </section>
 
 <style>
-  .build{position:relative;height:660vh;background:var(--shadow)}
+  .build{position:relative;height:515vh;background:var(--shadow)}
   .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
   .paper{position:absolute;inset:0;background:url(/textures/kraft.jpg) center/cover var(--kraft);color:var(--graphite);display:flex;align-items:center;justify-content:flex-end;padding:6vh 3vw}
   .paper::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 18vmax rgba(60,40,20,.35);pointer-events:none}
@@ -135,27 +195,44 @@ const chapters = [
   .plan .greet{font-family:var(--hand);font-size:34px;fill:var(--mark)}
   .plan .drawhand{pointer-events:none;filter:drop-shadow(6px 10px 6px rgba(60,40,20,.25))}
   .stage{position:absolute;inset:0;width:100%;height:100%;opacity:0}
-  .mapview{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;overflow:hidden}
-  .mapview::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 18vmax rgba(60,40,20,.35);pointer-events:none}
-  .maplabels{position:absolute;inset:0;overflow:hidden}
-  .maplabels :global(.pill){position:absolute;left:0;top:0;display:flex;align-items:center;gap:.45rem;white-space:nowrap;font-family:var(--body);font-size:.8rem;line-height:1;color:var(--graphite);background:rgba(243,233,210,.94);border:1.5px solid var(--graphite);padding:.4rem .75rem;border-radius:3px;box-shadow:0 8px 18px -10px rgba(40,25,10,.6);opacity:0;transition:opacity .35s;will-change:transform}
-  .maplabels :global(.pill.on){opacity:1}
-  .maplabels :global(.pill .n){font-family:var(--latin);color:var(--mark)}
-  .maplabels :global(.pill b){font-family:var(--hand);font-weight:700;font-size:1.05rem}
-  .maplabels :global(.pill .k){opacity:.7}
-  .maplabels :global(.pill.hq),.maplabels :global(.pill.dest){background:var(--walnut);color:var(--kraft-light);border-color:var(--walnut)}
-  .maplabels :global(.pill.hq .n),.maplabels :global(.pill.dest .n){color:var(--pine)}
-  .mapcard{position:absolute;inset-inline-end:5vw;bottom:7vh;width:min(23rem,40vw);background:rgba(243,233,210,.92);padding:1.1rem 1.4rem 1.2rem;box-shadow:0 18px 40px -20px rgba(40,25,10,.6);opacity:0;color:var(--graphite)}
+  .mapview{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;background:var(--ground);
+    --hill:#7f8a58;--ground:#b9b27a;--sky1:#d9e4e2;--sky2:#f3ead0}
+  .mapview::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 18vmax rgba(60,40,20,.28);pointer-events:none}
+  .scene{position:absolute;inset:0;overflow:hidden}
+  .sky{position:absolute;inset:0 0 40% 0;background:linear-gradient(var(--sky1),var(--sky2))}
+  .sun{position:absolute;inset-inline-end:14%;top:14%;width:9vmin;height:9vmin;border-radius:50%;background:#ffe2a0;box-shadow:0 0 6vmin 2vmin rgba(255,226,160,.55)}
+  .layer{position:absolute;inset-inline:0;background-repeat:repeat-x;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x}
+  .far{bottom:44%;height:24%;background:var(--hill);opacity:.8}
+  .mid{bottom:36%;height:27%;background:#4b3a2a;opacity:.72}
+  .ground{position:absolute;inset:auto 0 0 0;height:45%;background:var(--ground)}
+  .road{position:absolute;inset-inline:0;bottom:10%;height:16%;background:#3a3836;box-shadow:0 -4px 0 #cdb48e,0 4px 0 #cdb48e}
+  .dash{position:absolute;inset-inline:0;top:48%;height:5px;background:repeating-linear-gradient(90deg,#f3e9d2 0 70px,transparent 70px 150px)}
+  .truck2d{position:absolute;bottom:11.5%;left:12vw;width:clamp(500px,56vw,880px);height:auto;overflow:visible}
+  .truck2d .tt{font-family:var(--display);font-weight:700;font-size:21px;fill:#6E3B1C}
+  .truck2d .ts{font-family:var(--body);font-size:14px;fill:#3A3A38}
+  .truck2d .wheel{transform-box:fill-box;transform-origin:center}
+  .truck2d .tw{font-family:var(--display);font-weight:700;font-size:10px;fill:#E3D3B4}
+  .truck2d .g-work,.truck2d .g-home,.truck2d .g-truck,.truck2d .g-bed{will-change:transform}
+  .truck2d .g-rdoor{transform-box:fill-box;transform-origin:50% 0}
+  .truck2d .g-ok{transform-box:fill-box;transform-origin:center;opacity:0}
+  .truck2d .arm{transform-box:fill-box;transform-origin:0% 100%}
+  .truck2d .g-home.done .arm{animation:wave .6s ease-in-out infinite alternate}
+  @keyframes wave{from{transform:rotate(-14deg)}to{transform:rotate(22deg)}}
+  .mini{width:7.2rem;flex:none}
+  .mini .m-out{fill:rgba(110,59,28,.14);stroke:#6E3B1C;stroke-width:.8;stroke-linejoin:round}
+  .mini .m-route{fill:none;stroke:#3A3A38;stroke-width:1;stroke-dasharray:.02 .02;opacity:.5}
+  .mini .m-done{fill:none;stroke:#B3352B;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+  .mini .m-dot{fill:#6E3B1C;stroke:#F3E9D2;stroke-width:1.3}
+  .mapcard{position:absolute;left:4vw;top:8vh;display:flex;gap:1rem;align-items:center;width:min(25rem,44vw);background:rgba(243,233,210,.92);padding:1.1rem 1.4rem 1.2rem;box-shadow:0 18px 40px -20px rgba(40,25,10,.6);opacity:0;color:var(--graphite)}
   .mc-now{font-size:.9rem;opacity:.75;line-height:1.4}
   .mc-now b{display:block;font-family:var(--hand);font-size:1.7rem;color:var(--walnut);line-height:1.2;opacity:1}
-  .mc-ends{display:flex;justify-content:space-between;margin-top:.8rem;font-size:.85rem;font-weight:600}
-  .mc-ends i{font-style:normal;font-family:var(--latin);color:var(--mark);margin-inline-end:.35rem}
+  .mc-info{flex:1;min-width:0}
   .mc-bar{margin-top:.45rem;height:6px;background:rgba(58,58,56,.18);overflow:hidden}
   .mc-bar span{display:block;height:100%;background:var(--mark);transform:scaleX(0);transform-origin:right center}
   .mc-km{margin-top:.55rem;font-size:.85rem;text-align:end}
   .mc-km b{font-family:var(--latin);font-size:1.3rem;color:var(--walnut);font-weight:500;font-variant-numeric:tabular-nums}
   .badge{margin-top:.7rem;display:inline-block;font-family:var(--display);font-weight:700;font-size:.9rem;color:var(--kraft-light);background:var(--mark);padding:.3rem .9rem;border-radius:2px;transform:rotate(-2deg);opacity:0}
-  .stats{list-style:none;padding:0;position:absolute;inset-inline-end:6vw;bottom:8vh;display:grid;grid-template-columns:repeat(2,minmax(9rem,1fr));gap:1.2rem 2.5rem;opacity:0;visibility:hidden;background:rgba(243,233,210,.92);padding:1.6rem 2rem;box-shadow:0 18px 40px -20px rgba(40,25,10,.6)}
+  .stats{list-style:none;padding:0;position:absolute;left:4vw;top:8vh;display:grid;grid-template-columns:repeat(2,minmax(9rem,1fr));gap:1.2rem 2.5rem;opacity:0;visibility:hidden;background:rgba(243,233,210,.92);padding:1.6rem 2rem;box-shadow:0 18px 40px -20px rgba(40,25,10,.6)}
   .stats li{display:grid}
   .stats .num{font-family:var(--latin);font-size:clamp(1.8rem,3vw,2.6rem);color:var(--walnut);line-height:1.1;font-variant-numeric:tabular-nums}
   .stats .lbl{font-size:.95rem;color:var(--graphite)}
@@ -197,8 +274,10 @@ const chapters = [
     .chap .hand{font-size:1.3rem}
     .counter{top:4vh;gap:1.4rem}
     .counter dd{font-size:1.3rem}
-    .build{height:800vh}
-    .mapcard{top:3vh;bottom:auto;inset-inline:5vw;width:auto;padding:.8rem 1rem 1rem}.mc-now b{font-size:1.2rem}.maplabels :global(.pill){font-size:.72rem;padding:.35rem .65rem}.stats{top:14vh;bottom:auto;inset-inline:5vw;padding:1rem 1.2rem;gap:.8rem 1.4rem}
+    .build{height:620vh}
+    .mapcard{top:2.5vh;inset-inline:4vw;width:auto;padding:.6rem .9rem}.mini{width:4.6rem}.mc-now b{font-size:1.15rem}.badge{margin-top:.4rem}
+    .mapview .scene{top:19%;bottom:34%}
+    .truck2d{left:0;width:100vw}.stats{top:14vh;bottom:auto;inset-inline:5vw;padding:1rem 1.2rem;gap:.8rem 1.4rem}
     .cta{bottom:4vh;inset-inline-start:auto;inset-inline-end:5vw}
     .hint{display:none}
   }
