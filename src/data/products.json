@@ -1,0 +1,7 @@
+[
+  { "slug": "lit-coffre", "name": "سرير بصندوق تخزين", "wood": "صنوبر + MDF مصبوغ", "price": null, "image": "/images/lit-coffre.jpg" },
+  { "slug": "sommier", "name": "قاعدة سرير بالأرجل", "wood": "صنوبر طبيعي", "price": null, "image": "/images/sommier.jpg" },
+  { "slug": "table-chevet", "name": "طاولة جانبية بدرجين", "wood": "صنوبر + MDF", "price": null, "image": "/images/chevets.jpg" },
+  { "slug": "lit-coffre-brut", "name": "سرير بصندوق، صنوبر خام", "wood": "صنوبر طبيعي", "price": null, "image": "/images/lit-coffre.jpg" },
+  { "slug": "sommier-double", "name": "قاعدة سرير مزدوجة", "wood": "صنوبر طبيعي", "price": null, "image": "/images/sommier.jpg" }
+]
