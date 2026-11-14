@@ -1,0 +1,85 @@
+---
+const { title = 'Menuiserie', description = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+  <meta name="theme-color" content="#6E3B1C" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content="/images/og.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;700&family=Aref+Ruqaa:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="/textures/kraft.jpg" />
+  <style is:global>
+    :root{
+      --kraft:#CDB48E;
+      --kraft-light:#E3D3B4;
+      --graphite:#3A3A38;
+      --pine:#E4C995;
+      --walnut:#6E3B1C;
+      --shadow:#1E1A16;
+      --mark:#B3352B;       /* قلم النجار، للعلامات فقط */
+      --display:'El Messiri', 'Segoe UI', serif;
+      --hand:'Aref Ruqaa', 'El Messiri', serif;
+      --body:'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+      --latin:'Fraunces', Georgia, serif;
+    }
+    *{box-sizing:border-box;margin:0}
+    html{background:var(--shadow)}
+    body{background:var(--kraft-light);color:var(--graphite);font-family:var(--body);font-size:1.0625rem;line-height:1.75;-webkit-font-smoothing:antialiased}
+    body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:url(/textures/grain.png);opacity:.05;mix-blend-mode:multiply}
+    img{max-width:100%;display:block}
+    a{color:inherit}
+    h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.2;color:var(--shadow)}
+    :focus-visible{outline:3px solid var(--mark);outline-offset:3px}
+    .wrap{width:min(1180px,90vw);margin-inline:auto}
+    .hand{font-family:var(--hand);color:var(--mark)}
+    .btn{display:inline-block;font-family:var(--display);font-weight:700;font-size:1.1rem;text-decoration:none;background:var(--walnut);color:var(--kraft-light);padding:.85rem 1.8rem;border-radius:3px;box-shadow:0 2px 0 #3d2010}
+    .btn:hover{background:#7d4422}
+  </style>
+</head>
+<body>
+  <slot />
+  <script>
+    import Lenis from 'lenis';
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    gsap.registerPlugin(ScrollTrigger);
+    // إحصائيات خفيفة داخلية: وصل لقسم المنتوجات، ضغط واتساب أو اتصال
+    const seen = new Set();
+    const track = (k) => {
+      if (seen.has(k)) return; seen.add(k);
+      try { navigator.sendBeacon('/api/track', new Blob([JSON.stringify({ k, p: location.pathname })], { type: 'application/json' })); } catch { /* */ }
+    };
+    const prod = document.getElementById('produits');
+    if (prod && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { track('story'); io.disconnect(); } }, { threshold: 0.05 });
+      io.observe(prod);
+    }
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest && e.target.closest('a'); if (!a) return;
+      if (a.href.includes('wa.me')) track('wa'); else if (a.href.startsWith('tel:')) track('call');
+    });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const touch = matchMedia('(pointer: coarse)').matches;
+      // على التيليفون نبطؤو السكرول شوية باش الأنيميشن تتشاف مليح
+      const lenis = new Lenis({ lerp: 0.1, syncTouch: touch, syncTouchLerp: 0.06, touchMultiplier: 0.6, touchInertiaMultiplier: 18 });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((t) => lenis.raf(t * 1000));
+      gsap.ticker.lagSmoothing(0);
+      document.querySelectorAll('a[href^="#"]').forEach((a) =>
+        a.addEventListener('click', (e) => { e.preventDefault(); lenis.scrollTo(a.getAttribute('href')); }));
+    }
+  </script>
+</body>
+</html>

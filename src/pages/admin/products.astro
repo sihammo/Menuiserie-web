@@ -1,0 +1,67 @@
+---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+import { listProducts, listOrders, ratingOf } from '../../lib/store.js';
+const products = listProducts();
+const orders = listOrders();
+const m = Astro.url.searchParams.get('m');
+const msgs = { saved: 'تسجل التعديل', added: 'تزاد المنتوج', deleted: 'تحذف المنتوج', name: 'اكتب اسم المنتوج', big: 'الصورة كبيرة (أقصى حد 5MB)', img: 'الصورة لازم تكون JPG أو PNG أو WEBP' };
+const stat = (slug) => { const mine = orders.filter((o) => o.product === slug); return { n: mine.length, ok: mine.filter((o) => o.status === 'confirmed' || o.status === 'delivered').length }; };
+---
+<Admin title="المنتوجات" tab="products">
+  {m && msgs[m] && <p class="msg">{msgs[m]}</p>}
+  <section class="card addbox">
+    <h2>+ زيد منتوج جديد</h2>
+    <form class="pf" method="post" action="/api/admin/product" enctype="multipart/form-data">
+      <input type="hidden" name="action" value="save" />
+      <label>الاسم<input name="name" required /></label>
+      <label>الخشب / النوع<input name="wood" placeholder="مثال: صنوبر طبيعي" /></label>
+      <label>وصف خفيف<textarea name="desc" rows="2" maxlength="300" placeholder="جملتين على المنتوج: المقاس، الميزة…"></textarea></label>
+      <label>الثمن بالدج (خليه خاوي = «نأكدوه معاك»)<input name="price" inputmode="numeric" /></label>
+      <label>الصورة: ارفع فوطو<input type="file" name="image" accept="image/jpeg,image/png,image/webp" /></label>
+      <label>ولا حط رابط الصورة<input name="imageUrl" dir="ltr" placeholder="https://…" /></label>
+      <label class="chk"><input type="checkbox" name="available" checked /> متوفر</label>
+      <button class="p">زيد المنتوج</button>
+    </form>
+  </section>
+  {products.map((p) => {
+    const s = stat(p.slug), r = ratingOf(p.slug);
+    return (
+      <article class="card prod">
+        <img src={p.image} alt="" width="90" height="110" />
+        <div class="info">
+          <h3>{p.name} <span class={`badge ${p.available === false ? '' : 'ok'}`}>{p.available === false ? 'غير متوفر' : 'متوفر'}</span></h3>
+          <div>{p.wood} · {p.price ? `${p.price} دج` : 'بلا ثمن'}</div>
+          <div class="meta">{s.n} طلب · {s.ok} مؤكد · {r.n ? <><span class="star">★</span> {r.avg.toFixed(1)} ({r.n})</> : 'بلا تقييم'} · <a href={`/produits/${p.slug}`} target="_blank">فتح الصفحة</a></div>
+        </div>
+        <div class="acts">
+          <form method="post" action="/api/admin/product"><input type="hidden" name="action" value="toggle" /><input type="hidden" name="slug" value={p.slug} /><button>{p.available === false ? 'خليه متوفر' : 'خليه غير متوفر'}</button></form>
+          <form method="post" action="/api/admin/product" onsubmit="return confirm('نحيو هذا المنتوج؟ الطلبات القديمة تبقى.')"><input type="hidden" name="action" value="delete" /><input type="hidden" name="slug" value={p.slug} /><button class="x">حذف</button></form>
+        </div>
+        <details class="edit">
+          <summary>تعديل</summary>
+          <form class="pf" method="post" action="/api/admin/product" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save" /><input type="hidden" name="slug" value={p.slug} />
+            <label>الاسم<input name="name" value={p.name} required /></label>
+            <label>الخشب / النوع<input name="wood" value={p.wood} /></label>
+            <label>وصف خفيف<textarea name="desc" rows="2" maxlength="300">{p.desc || ''}</textarea></label>
+            <label>الثمن بالدج<input name="price" value={p.price ?? ''} inputmode="numeric" /></label>
+            <label>رابط الصورة<input name="imageUrl" value={p.image} dir="ltr" /></label>
+            <label>ولا ارفع فوطو جديدة<input type="file" name="image" accept="image/jpeg,image/png,image/webp" /></label>
+            <label class="chk"><input type="checkbox" name="available" checked={p.available !== false} /> متوفر</label>
+            <button class="p">حفظ</button>
+          </form>
+        </details>
+      </article>
+    );
+  })}
+</Admin>
+<style>
+  .addbox h2{margin:0 0 .5rem;font-size:1.2rem}
+  .prod{display:grid;grid-template-columns:auto 1fr auto;gap:.5rem 1.2rem;align-items:start}
+  .prod img{width:90px;height:110px;object-fit:cover}.prod h3{margin:0;font-size:1.1rem}.meta{font-size:.9rem;opacity:.8}
+  .acts{display:flex;gap:.4rem;flex-wrap:wrap}.acts form{display:inline}
+  .edit{grid-column:1/-1}.edit summary{cursor:pointer;font-weight:600;color:var(--w)}
+  .pf{display:grid;gap:.7rem;max-width:26rem;margin-top:1rem}.pf label{display:grid;gap:.25rem;font-size:.95rem}.pf .chk{display:flex;gap:.5rem;align-items:center}
+  @media (max-width:640px){.prod{grid-template-columns:auto 1fr}.acts{grid-column:1/-1}}
+</style>

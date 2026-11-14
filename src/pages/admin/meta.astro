@@ -1,0 +1,88 @@
+---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+import { getMeta, listMessages, listProducts } from '../../lib/store.js';
+import { wilayaList } from '../../lib/orders.js';
+import { findPhone } from '../../lib/meta.js';
+const m = getMeta();
+const p = Astro.url.searchParams;
+const origin = Astro.url.origin;
+const connected = !!(m.pageToken && m.appSecret);
+const msgs = listMessages();
+const threads = [...new Set(msgs.map((x) => x.psid))].map((psid) => {
+  const list = msgs.filter((x) => x.psid === psid);
+  const incoming = list.filter((x) => x.dir === 'in');
+  return { psid, name: list.find((x) => x.name)?.name || 'زبون ماسنجر', list, last: list[list.length - 1].at, open: incoming.some((x) => !x.handled), phone: findPhone(incoming.map((x) => x.text).join(' ')) };
+}).sort((a, b) => (b.open - a.open) || b.last.localeCompare(a.last));
+const products = listProducts().filter((x) => x.available !== false);
+const fmt = (d) => new Date(d).toLocaleString('fr-DZ', { dateStyle: 'short', timeStyle: 'short' });
+const info = { saved: 'تسجلت الإعدادات', sent: 'تبعثت الرسالة', order: `تصنع الطلب ${p.get('id') || ''}، تلقاه في «الطلبات»` };
+---
+<Admin title="ماسنجر" tab="meta">
+  {p.get('m') && info[p.get('m')] && <p class="msg">{info[p.get('m')]}</p>}
+  {p.get('m') === 'err' && <p class="msg" style="border-color:#B3352B">{p.get('e')}</p>}
+
+  <details class="card" open={!connected}>
+    <summary><b>إعدادات ربط ميتا (فيسبوك ماسنجر)</b> <span class={`badge ${connected ? 'ok' : ''}`}>{connected ? 'مربوط' : 'غير مربوط'}</span></summary>
+    <ol class="steps">
+      <li>في <b>developers.facebook.com</b> ادير تطبيق (نوع Business) وزيد منتج <b>Messenger</b>، واربطو بصفحة الورشة.</li>
+      <li>في إعدادات الـ Webhook حط هذا الرابط: <code dir="ltr">{origin}/api/meta/webhook</code> (لازم HTTPS ودومين حقيقي).</li>
+      <li>في «Verify token» حط القيمة اللي تحت، واشترك في <code dir="ltr">messages</code> للصفحة.</li>
+      <li>انسخ <b>Page Access Token</b> و<b>App Secret</b> وحطهم هنا. ما يبانوش بعد الحفظ، وخانة خاوية تخلي القيمة القديمة.</li>
+    </ol>
+    <form class="pf" method="post" action="/api/admin/meta">
+      <input type="hidden" name="action" value="settings" />
+      <label>Verify token<input name="verifyToken" value={m.verifyToken} dir="ltr" /></label>
+      <label>Page ID<input name="pageId" value={m.pageId} dir="ltr" /></label>
+      <label>Page Access Token {m.pageToken && <small>(محفوظ ✓)</small>}<input name="pageToken" type="password" autocomplete="off" placeholder="EAAB…" dir="ltr" /></label>
+      <label>App Secret {m.appSecret && <small>(محفوظ ✓)</small>}<input name="appSecret" type="password" autocomplete="off" dir="ltr" /></label>
+      <label>نسخة Graph API<input name="apiVersion" value={m.apiVersion} dir="ltr" /></label>
+      <label class="chk"><input type="checkbox" name="autoReply" checked={m.autoReply} /> رد تلقائي على أول رسالة من الزبون</label>
+      <label>نص الرد التلقائي<textarea name="autoReplyText" rows="3">{m.autoReplyText}</textarea></label>
+      <button class="p">حفظ</button>
+    </form>
+  </details>
+
+  <h2 class="s">الرسائل ({threads.filter((t) => t.open).length} جديدة)</h2>
+  {threads.length === 0 && <p class="empty">ما وصلت حتى رسالة بعد. من بعد الربط، رسائل صفحة الفيسبوك تجي هنا.</p>}
+  {threads.map((t) => (
+    <article class="card th" id={`t-${t.psid}`}>
+      <header><b>{t.name}</b> {t.open ? <span class="badge new">جديد</span> : <span class="badge ok">تعالج</span>} <span class="meta">{fmt(t.last)}</span></header>
+      <div class="chat">
+        {t.list.map((x) => <p class={`b ${x.dir}`}><span>{x.text}</span><small>{fmt(x.at)}{x.auto ? ' · تلقائي' : ''}</small></p>)}
+      </div>
+      <form class="reply" method="post" action="/api/admin/meta">
+        <input type="hidden" name="action" value="reply" /><input type="hidden" name="psid" value={t.psid} />
+        <input name="text" placeholder="رد على الزبون…" required /><button class="p" disabled={!connected}>ارسل</button>
+      </form>
+      <details>
+        <summary>حوّل لطلب</summary>
+        <form class="pf" method="post" action="/api/admin/meta">
+          <input type="hidden" name="action" value="order" /><input type="hidden" name="psid" value={t.psid} />
+          <label>الاسم الكامل<input name="name" value={t.name === 'زبون ماسنجر' ? '' : t.name} required /></label>
+          <label>الهاتف<input name="phone" value={t.phone} dir="ltr" required /></label>
+          <label>الولاية<select name="wilaya" required><option value="">اختار</option>{wilayaList.map((w) => <option value={w.code}>{String(w.code).padStart(2, '0')} - {w.name}</option>)}</select></label>
+          <label>العنوان<input name="address" required /></label>
+          <label>المنتوج<select name="product" required>{products.map((x) => <option value={x.slug}>{x.name}</option>)}</select></label>
+          <label>الكمية<input name="qty" type="number" value="1" min="1" /></label>
+          <label>ملاحظة<input name="note" /></label>
+          <button class="p">صنع الطلب</button>
+        </form>
+      </details>
+      <div class="acts">
+        <form method="post" action="/api/admin/meta"><input type="hidden" name="action" value="handled" /><input type="hidden" name="psid" value={t.psid} /><input type="hidden" name="value" value={t.open ? '1' : '0'} /><button>{t.open ? 'تعالج ✓' : 'رجعو جديد'}</button></form>
+        <form method="post" action="/api/admin/meta" onsubmit="return confirm('نحيو هذي المحادثة؟')"><input type="hidden" name="action" value="delete" /><input type="hidden" name="psid" value={t.psid} /><button class="x">حذف</button></form>
+      </div>
+    </article>
+  ))}
+</Admin>
+<style>
+  .steps{margin:.8rem 0;padding-inline-start:1.2rem}.steps li{margin-bottom:.3rem}code{background:#fbf6ea;padding:.1rem .4rem;word-break:break-all}
+  .pf{display:grid;gap:.7rem;max-width:30rem;margin-top:1rem}.pf label{display:grid;gap:.25rem;font-size:.95rem}.pf .chk{display:flex;gap:.5rem;align-items:center}
+  .meta{font-size:.85rem;opacity:.7}.th header{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem}
+  .chat{display:grid;gap:.4rem;max-height:18rem;overflow:auto;background:#fbf6ea;padding:.7rem}
+  .b{margin:0;display:grid;max-width:85%}.b span{padding:.4rem .7rem;border-radius:10px;background:#fff}.b small{font-size:.7rem;opacity:.6}
+  .b.in{justify-self:start}.b.out{justify-self:end}.b.out span{background:#cdb48e}
+  .reply{display:flex;gap:.5rem;margin:.7rem 0}.reply input{flex:1}
+  details summary{cursor:pointer;font-weight:600;color:var(--w)}.acts{display:flex;gap:.5rem;margin-top:.7rem}
+</style>

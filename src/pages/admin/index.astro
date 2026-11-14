@@ -1,0 +1,95 @@
+---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+import { listOrders, STATUSES, adminUser, listProducts } from '../../lib/store.js';
+import { wilayaName } from '../../lib/orders.js';
+const all = listOrders();
+const filter = Astro.url.searchParams.get('s') || '';
+const q = (Astro.url.searchParams.get('q') || '').trim().toLowerCase();
+const orders = all.filter((o) => (!filter || o.status === filter) &&
+  (!q || [o.id, o.firstName, o.lastName, o.phone, o.address, o.productName, wilayaName(o.wilaya)].join(' ').toLowerCase().includes(q)));
+const count = (s) => all.filter((o) => o.status === s).length;
+const c = Astro.url.searchParams.get('c');
+const back = Astro.url.pathname + Astro.url.search;
+const prods = listProducts();
+const rows = prods.map((p) => {
+  const mine = all.filter((o) => o.product === p.slug);
+  const sold = mine.filter((o) => o.status === 'confirmed' || o.status === 'delivered');
+  return { name: p.name, orders: mine.length, confirmed: sold.length, qty: sold.reduce((a, o) => a + o.qty, 0) };
+}).sort((a, b) => b.qty - a.qty || b.orders - a.orders);
+const top = rows[0] && rows[0].qty > 0 ? rows[0] : null;
+const fmt = (d) => new Date(d).toLocaleString('fr-DZ', { dateStyle: 'short', timeStyle: 'short' });
+---
+<Admin title="الطلبات" tab="orders">
+
+  <div class="stats">
+    <a class={`stat ${!filter ? 'on' : ''}`} href="/admin"><b>{all.length}</b>كل الطلبات</a>
+    {Object.entries(STATUSES).map(([k, v]) => <a class={`stat ${filter === k ? 'on' : ''}`} href={`/admin?s=${k}`}><b>{count(k)}</b>{v}</a>)}
+  </div>
+
+  <h2 class="s">المنتوجات: شكون يمشي؟</h2>
+  {top && <p class="top-seller">🏆 الأكثر مبيعا (مؤكد/متسلّم): <b>{top.name}</b> — {top.qty} قطعة في {top.confirmed} طلب</p>}
+  <table>
+    <thead><tr><th>المنتوج</th><th>كل الطلبات</th><th>مؤكدة / متسلّمة</th><th>القطع المؤكدة</th></tr></thead>
+    <tbody>{rows.map((r) => <tr><td>{r.name}</td><td>{r.orders}</td><td>{r.confirmed}</td><td>{r.qty}</td></tr>)}</tbody>
+  </table>
+  <h2 class="s">الطلبات</h2>
+  <form class="tools" method="get" action="/admin">
+    {filter && <input type="hidden" name="s" value={filter} />}
+    <input name="q" value={q} placeholder="بحث: اسم، هاتف، ولاية، رقم…" />
+    <button>بحث</button>
+    <a class="btn p" href="/api/admin/export.csv">تصدير Excel (CSV)</a>
+  </form>
+  {orders.length === 0 && <p class="empty">ما كاينش طلبات</p>}
+  {orders.map((o) => (
+    <article class="order">
+      <div>
+        <h3>{o.firstName} {o.lastName} <span class={`badge ${o.status}`}>{STATUSES[o.status]}</span> {o.source === 'messenger' && <span class="badge" style="background:#0a7cff">ماسنجر</span>}</h3>
+        <div>{o.productName} × {o.qty}</div>
+        <div><a href={`tel:${o.phone}`} dir="ltr">{o.phone}</a> · {wilayaName(o.wilaya)} · {o.address}</div>
+        {o.note && <div>📝 {o.note}</div>}
+        <div class="meta" dir="ltr">{o.id} · {fmt(o.createdAt)}</div>
+      </div>
+      <div class="acts">
+        <form method="post" action="/api/admin/order">
+          <input type="hidden" name="id" value={o.id} /><input type="hidden" name="action" value="status" /><input type="hidden" name="back" value={back} />
+          <select name="status">{Object.entries(STATUSES).map(([k, v]) => <option value={k} selected={k === o.status}>{v}</option>)}</select>
+          <button class="p">حفظ</button>
+        </form>
+        <a class="btn" href={`/api/order-file/${o.id}`} download>ملف الطلب</a>
+        <a class="btn" href={`https://wa.me/213${o.phone.slice(1)}`} target="_blank" rel="noopener">واتساب</a>
+        <form method="post" action="/api/admin/order" onsubmit="return confirm('نحيو هذا الطلب نهائيا؟')">
+          <input type="hidden" name="id" value={o.id} /><input type="hidden" name="action" value="delete" /><input type="hidden" name="back" value={back} />
+          <button class="x">حذف</button>
+        </form>
+      </div>
+    </article>
+  ))}
+  <details class="acc" id="compte" open={!!c}>
+    <summary>تغيير اسم المستخدم وكلمة السر</summary>
+    {c === 'ok' && <p class="msg" style="color:#2f7d4f">تبدل بنجاح</p>}
+    {c === 'bad' && <p class="msg" style="color:#B3352B">كلمة السر الحالية غالطة</p>}
+    {c === 'short' && <p class="msg" style="color:#B3352B">الاسم 3 حروف على الأقل وكلمة السر 4 على الأقل</p>}
+    <form method="post" action="/api/admin/credentials">
+      <input name="user" value={adminUser()} placeholder="اسم المستخدم الجديد" required />
+      <input name="pass" type="password" placeholder="كلمة السر الجديدة" required autocomplete="new-password" />
+      <input name="current" type="password" placeholder="كلمة السر الحالية" required autocomplete="current-password" />
+      <button class="p">حفظ</button>
+    </form>
+  </details>
+</Admin>
+
+<style>
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.8rem;margin-bottom:1.2rem}
+  .stat{background:var(--k);padding:.9rem 1rem;text-decoration:none;color:inherit;border-bottom:4px solid transparent}
+  .stat.on{border-color:var(--w)} .stat b{display:block;font-size:1.8rem;color:var(--w);line-height:1.1}
+  .tools{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+  .order{background:var(--k);padding:1rem 1.2rem;margin-bottom:.9rem;display:grid;grid-template-columns:1fr auto;gap:.5rem 1.5rem}
+  .order h3{margin:0;font-size:1.1rem}.meta{font-size:.9rem;opacity:.75}
+  .acts{display:flex;gap:.4rem;flex-wrap:wrap;align-items:flex-start;justify-content:flex-end}.acts form{display:inline-flex;gap:.3rem}
+  details.acc{background:var(--k);padding:1rem 1.2rem;margin-top:2rem} summary{cursor:pointer;font-weight:700}
+  details.acc form{display:grid;gap:.6rem;max-width:22rem;margin-top:1rem}
+  h2.s{font-size:1.1rem;margin:1.5rem 0 .6rem}
+  .top-seller{background:#fbf6ea;border-inline-start:4px solid #2f7d4f;padding:.6rem 1rem;margin-bottom:.8rem}
+  @media (max-width:640px){.order{grid-template-columns:1fr}.acts{justify-content:flex-start}}
+</style>

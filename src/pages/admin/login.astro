@@ -1,0 +1,24 @@
+---
+export const prerender = false;
+import { readSession } from '../../lib/store.js';
+if (readSession(Astro.cookies.get('adm')?.value)) return Astro.redirect('/admin');
+const e = Astro.url.searchParams.get('e');
+---
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>دخول الأدمن</title>
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#1E1A16;font-family:'IBM Plex Sans Arabic',Tahoma,sans-serif;color:#1E1A16}
+  form{background:#E3D3B4;padding:2rem;width:min(22rem,90vw);display:grid;gap:1rem;box-shadow:0 20px 40px -20px #000}
+  h1{margin:0;font-size:1.5rem} label{display:grid;gap:.3rem}
+  input{padding:.7rem;font:inherit;border:1.5px solid #8c6b45;background:#fbf6ea}
+  button{padding:.8rem;font:inherit;font-weight:700;background:#6E3B1C;color:#E3D3B4;border:0;cursor:pointer}
+  .e{color:#B3352B;font-weight:600;margin:0}
+</style></head><body>
+<form method="post" action="/api/admin/login">
+  <h1>لوحة التحكم</h1>
+  {e === '1' && <p class="e">الاسم أو كلمة السر غالطين</p>}
+  {e === '2' && <p class="e">محاولات بزاف، عاود بعد شوية</p>}
+  <label>اسم المستخدم<input name="user" autocomplete="username" autofocus required /></label>
+  <label>كلمة السر<input name="pass" type="password" autocomplete="current-password" required /></label>
+  <button>دخول</button>
+</form></body></html>

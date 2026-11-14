@@ -1,0 +1,41 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import { getOrder } from '../../lib/store.js';
+import { wilayaName } from '../../lib/orders.js';
+const o = getOrder(Astro.params.id);
+if (!o) return new Response('الطلب غير موجود', { status: 404 });
+const wa = `https://wa.me/213698074263?text=${encodeURIComponent(`السلام عليكم، طلبي رقم ${o.id} (${o.productName})`)}`;
+---
+<Base title={`تم الطلب ${o.id}`} description="تأكيد الطلب">
+  <main class="wrap page">
+    <div class="ok">✓</div>
+    <h1>وصلنا طلبك، شكرا {o.firstName}</h1>
+    <p>نتصلو بيك في أقرب وقت على الرقم <b dir="ltr">{o.phone}</b> لتأكيد الطلب والتوصيل.</p>
+    <dl>
+      <dt>رقم الطلب</dt><dd dir="ltr">{o.id}</dd>
+      <dt>المنتوج</dt><dd>{o.productName} × {o.qty}</dd>
+      <dt>الاسم</dt><dd>{o.firstName} {o.lastName}</dd>
+      <dt>الولاية</dt><dd>{wilayaName(o.wilaya)}</dd>
+      <dt>العنوان</dt><dd>{o.address}</dd>
+      {o.note && <><dt>ملاحظة</dt><dd>{o.note}</dd></>}
+    </dl>
+    <div class="actions">
+      <a class="btn" href={`/api/order-file/${o.id}`} download>تحميل ملف الطلب</a>
+      <a class="btn alt" href={wa}>كلمنا في واتساب</a>
+      <a class="back" href="/">الرجوع للموقع</a>
+    </div>
+    <p class="small">احفظ رقم الطلب. ما تحتاجش تخلص دوك.</p>
+  </main>
+</Base>
+<style>
+  .page{max-width:640px;padding:4rem 0 6rem;text-align:center}
+  .ok{width:4rem;height:4rem;border-radius:50%;background:#2f7d4f;color:#fff;font-size:2rem;display:grid;place-items:center;margin:0 auto 1rem}
+  h1{font-size:2rem;margin-bottom:.6rem}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:.5rem 1.2rem;text-align:start;background:var(--kraft);padding:1.4rem 1.6rem;margin:1.8rem 0}
+  dt{color:var(--walnut);font-weight:600}
+  .actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;align-items:center}
+  .alt{background:#25D366;color:#10321c;box-shadow:0 2px 0 #1a8f47}.alt:hover{background:#2ee473}
+  .back{color:var(--walnut)}
+  .small{margin-top:1.5rem;font-size:.9rem;opacity:.7}
+</style>

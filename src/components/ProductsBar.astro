@@ -1,0 +1,80 @@
+---
+import { listProducts, ratingOf } from '../lib/store.js';
+const products = listProducts().map((p) => ({ ...p, r: ratingOf(p.slug) }));
+---
+<section class="bar" id="produits" aria-labelledby="produits-titre">
+  <div class="pin">
+    <div class="wrap head">
+      <h2 id="produits-titre">من الورشة لدارك</h2>
+      <p>كل قطعة عندها البطاقة تاعها: الاسم، الخشب، والثمن.</p>
+    </div>
+    <div class="viewport">
+      <ul class="track">
+        {products.map((p, i) => (
+          <li class="piece" style={`--tilt:${[-1.5, 1, -0.5, 1.5, -1][i % 5]}deg`}>
+            <a href={`/produits/${p.slug}`}>
+              <div class="photo"><img src={p.image} alt={p.name} loading="lazy" width="360" height="440" /></div>
+              <div class="tag">
+                <span class="hole" aria-hidden="true"></span>
+                <span class="name">{p.name}</span>
+                <span class="wood">{p.wood}</span>
+                {p.desc && <span class="desc">{p.desc}</span>}
+                <span class="price">{p.price ? `${p.price} دج` : 'الثمن: نأكدوه معاك'}</span>
+                {p.r.n > 0 && <span class="rate"><span class="star">★</span> {p.r.avg.toFixed(1)} ({p.r.n})</span>}
+                {p.available === false ? <span class="order-cta">غير متوفر حاليا</span> : <span class="order-cta">اطلب ←</span>}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bar{background:url(/textures/kraft.jpg) center/cover var(--kraft);position:relative}
+  .pin{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;padding:3.5rem 0}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem 3rem;flex-wrap:wrap}
+  h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+  .head p{max-width:38ch}
+  .viewport{margin-top:2rem;overflow:hidden}
+  .track{list-style:none;padding:1rem 5vw 2rem;display:flex;gap:3.2rem;width:max-content;will-change:transform}
+  .piece{width:min(300px,74vw);transform:rotate(var(--tilt))}
+  .piece a{text-decoration:none;display:block}
+  .photo{background:#fff;padding:12px 12px 14px;box-shadow:0 18px 30px -18px rgba(40,25,10,.55)}
+  .photo img{aspect-ratio:4/5;object-fit:cover;width:100%;filter:sepia(.12) contrast(1.03)}
+  .tag{position:relative;display:grid;gap:.15rem;margin:-1.6rem 1.4rem 0 auto;width:72%;background:#F3E9D2;padding:1.1rem 1.2rem .9rem;border-radius:2px 2px 2px 14px;box-shadow:0 6px 14px -6px rgba(40,25,10,.45);transform:rotate(calc(var(--tilt) * -2))}
+  .hole{position:absolute;top:.6rem;inset-inline-end:.7rem;width:12px;height:12px;border-radius:50%;background:var(--kraft);box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+  .hole::after{content:"";position:absolute;top:5px;inset-inline-end:5px;width:2px;height:70px;background:#8c6b45;transform:rotate(-35deg);transform-origin:top}
+  .name{font-family:var(--display);font-weight:700;font-size:1.25rem;color:var(--shadow)}
+  .wood{font-size:.95rem;color:var(--walnut)}
+  .desc{font-size:.85rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .rate{font-size:.9rem;color:var(--graphite)}.star{color:#c98a00}
+  .order-cta{margin-top:.4rem;font-weight:600;color:var(--walnut);font-size:.95rem;text-decoration:underline}
+  .price{font-family:var(--hand);color:var(--mark);font-size:1.25rem}
+  .piece a:hover .photo,.piece a:focus-visible .photo{box-shadow:0 26px 40px -18px rgba(40,25,10,.65)}
+  @media (max-width:760px){
+    .viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+    .viewport::-webkit-scrollbar{display:none}
+    .piece{scroll-snap-align:center}
+    .track{gap:2rem}
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  const mm = gsap.matchMedia();
+  mm.add('(min-width: 761px) and (prefers-reduced-motion: no-preference)', () => {
+    const track = document.querySelector('.bar .track');
+    const pin = document.querySelector('.bar .pin');
+    // RTL: المحتوى يفيض لليسار، نحركو الشريط لليمين
+    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
+    gsap.to(track, {
+      x: () => dist(),
+      ease: 'none',
+      scrollTrigger: { trigger: pin, start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.6, invalidateOnRefresh: true },
+    });
+  });
+</script>

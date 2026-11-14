@@ -1,0 +1,45 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import OrderForm from '../../components/OrderForm.astro';
+import Reviews from '../../components/Reviews.astro';
+import { getProduct } from '../../lib/store.js';
+const p = getProduct(Astro.params.slug);
+if (!p) return new Response('المنتوج غير موجود', { status: 404 });
+const off = p.available === false;
+---
+<Base title={`${p.name} — Chemami Meuble Nadhir`} description={`${p.name}، ${p.wood}. اطلب من الورشة في عين البيضة، توصيل لـ 69 ولاية.`}>
+  <main class="wrap page">
+    <a class="back" href="/#produits">← كل المنتوجات</a>
+    <div class="grid">
+      <div class="info">
+        <img src={p.image} alt={p.name} width="600" height="750" />
+        <h1>{p.name}</h1>
+        <p class="wood">{p.wood}</p>
+        {p.desc && <p class="desc">{p.desc}</p>}
+        <p class="price hand">{p.price ? `${p.price} دج` : 'الثمن: نأكدوه معاك'}</p>
+      </div>
+      <div class="formbox">
+        {off ? (
+          <><h2>غير متوفر حاليا</h2><p>اتصل بينا على <a href="tel:+213698074263" dir="ltr">0698 07 42 63</a> نشوفو معاك.</p></>
+        ) : (
+          <><h2>اطلب هذي القطعة</h2><OrderForm slug={p.slug} /></>
+        )}
+      </div>
+    </div>
+    <Reviews slug={p.slug} />
+  </main>
+</Base>
+<style>
+  .page{padding:2.5rem 0 6rem}
+  .back{text-decoration:none;color:var(--walnut)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:1.5rem;align-items:start}
+  .info img{width:100%;aspect-ratio:4/5;object-fit:cover;box-shadow:0 18px 30px -18px rgba(40,25,10,.55)}
+  h1{font-size:2rem;margin-top:1rem}
+  .wood{color:var(--walnut)}
+  .desc{margin-top:.5rem;max-width:40ch}
+  .price{font-size:1.5rem}
+  .formbox{background:var(--kraft);padding:1.8rem;box-shadow:0 18px 30px -20px rgba(40,25,10,.5)}
+  .formbox h2{margin-bottom:1rem;font-size:1.6rem}
+  @media (max-width:760px){.grid{grid-template-columns:1fr;gap:2rem}}
+</style>

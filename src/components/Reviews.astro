@@ -1,0 +1,63 @@
+---
+import { listReviews, ratingOf } from '../lib/store.js';
+const { slug } = Astro.props;
+const reviews = listReviews(slug);
+const r = ratingOf(slug);
+const fmt = (d) => new Date(d).toLocaleDateString('fr-DZ');
+---
+<section class="reviews" id="avis">
+  <h2>آراء الزبائن {r.n > 0 && <span class="avg"><span class="star">★</span> {r.avg.toFixed(1)} <small>({r.n})</small></span>}</h2>
+  <form id="rev-form" novalidate>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <input type="hidden" name="slug" value={slug} />
+    <input type="hidden" name="stars" value="0" />
+    <div class="pick" role="radiogroup" aria-label="التقييم">
+      {[1, 2, 3, 4, 5].map((n) => <button type="button" class="s" data-n={n} aria-label={`${n} نجوم`}>★</button>)}
+    </div>
+    <input name="name" placeholder="اسمك" autocomplete="given-name" required />
+    <textarea name="text" rows="3" placeholder="شاركنا رايك في القطعة…" required></textarea>
+    <p class="err" role="alert" hidden></p>
+    <button class="btn" type="submit">انشر رايك</button>
+  </form>
+  {reviews.length === 0 && <p class="none">كون أول واحد يعلق.</p>}
+  <ul>
+    {reviews.map((v) => (
+      <li><div><b>{v.name}</b> <span class="star">{'★'.repeat(v.stars)}<span class="off">{'★'.repeat(5 - v.stars)}</span></span> <small>{fmt(v.createdAt)}</small></div><p>{v.text}</p></li>
+    ))}
+  </ul>
+</section>
+<style>
+  .reviews{margin-top:4rem;max-width:42rem}
+  h2{font-size:1.6rem;margin-bottom:1rem}.avg{font-size:1.2rem;margin-inline-start:.6rem}.avg small{opacity:.7}
+  .star{color:#c98a00}.off{color:#bba98a}
+  form{display:grid;gap:.7rem;background:var(--kraft);padding:1.2rem}
+  input,textarea{font:inherit;padding:.65rem .8rem;border:1.5px solid #8c6b45;background:#fbf6ea;border-radius:3px;width:100%}
+  .hp{position:absolute;inset-inline-start:-9999px;height:0;opacity:0}
+  .pick{display:flex;gap:.2rem}.s{background:none;border:0;font-size:2rem;line-height:1;color:#bba98a;cursor:pointer;padding:0 .1rem}.s.on{color:#c98a00}
+  .err{color:var(--mark);font-weight:600}.btn{border:0;cursor:pointer;justify-self:start}.btn[disabled]{opacity:.6}
+  ul{list-style:none;padding:0;margin-top:1.5rem;display:grid;gap:1rem}
+  li{border-bottom:1px solid #b9a67f;padding-bottom:.8rem}li small{opacity:.65;margin-inline-start:.5rem}li p{margin-top:.2rem}.none{margin-top:1rem;opacity:.7}
+</style>
+<script>
+  const f = document.getElementById('rev-form') as HTMLFormElement;
+  const stars = f.querySelector('[name=stars]') as HTMLInputElement;
+  const btns = [...f.querySelectorAll('.s')] as HTMLButtonElement[];
+  const err = f.querySelector('.err') as HTMLElement;
+  const paint = (n: number) => btns.forEach((b) => b.classList.toggle('on', +b.dataset.n! <= n));
+  btns.forEach((b) => {
+    b.addEventListener('click', () => { stars.value = b.dataset.n!; paint(+b.dataset.n!); });
+    b.addEventListener('mouseenter', () => paint(+b.dataset.n!));
+    b.addEventListener('mouseleave', () => paint(+stars.value));
+  });
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault(); err.hidden = true;
+    const btn = f.querySelector('.btn') as HTMLButtonElement; btn.disabled = true;
+    try {
+      const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(f))) });
+      const d = await res.json().catch(() => ({}));
+      if (res.ok) { location.hash = 'avis'; location.reload(); return; }
+      err.textContent = d.error || 'صرات مشكلة، عاود'; err.hidden = false;
+    } catch { err.textContent = 'ما كاينش كونيكسيون، عاود'; err.hidden = false; }
+    btn.disabled = false;
+  });
+</script>

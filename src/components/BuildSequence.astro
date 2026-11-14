@@ -1,0 +1,210 @@
+---
+import stats from '../data/stats.json';
+// القصة: من المخطط إلى السرير. كل فصل مربوط بجزء من السكرول (src/scripts/build-sequence).
+const chapters = [
+  { title: 'كل قطعة تبدا بمخطط', text: '', note: 'مقاس 90 × 190', tag: 'h1' },
+  { title: 'نختارو الخشب لوح بلوح', text: '', note: 'علامة الطباشير = لوح مقبول' },
+  { title: 'نقصو على المقاس', text: '', note: 'نقيسو زوج مرات، نقصو مرة' },
+  { title: 'نركبو قطعة بقطعة', text: '', note: 'كل زاوية بزوج vis' },
+  { title: 'الصباغة باليد', text: '', note: 'زوج طبقات' },
+  { title: 'مساحة تخزين مخفية', text: '', note: 'خفيفة في اليد' },
+  { title: 'وماشي غير السرير', text: '', note: 'قولنا واش تحب' },
+  { title: 'نحملوه بعناية', text: '', note: 'مغلف ومحمي' },
+  { title: 'نوصلو لأبعد نقطة في الجزائر', text: '', note: `التوصيل في ${stats.deliveryHours} ساعة كأقصى حد` },
+  { title: 'أرقام الورشة', text: '', note: 'الثقة تتبنى بالخدمة' },
+];
+---
+<section class="build" id="build" aria-label="كيفاش يتبنى السرير">
+  <div class="pin">
+    <div class="paper" aria-hidden="true">
+      <svg class="plan" viewBox="0 0 1200 620" role="img" aria-label="مخطط السرير بالقلم">
+        <g class="ln-group" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- الأرض -->
+          <line class="ln" pathLength="1" x1="110" y1="500" x2="1090" y2="500" stroke-width="1.4" />
+          <!-- الرجلين (جهة الرجلين، يسار) -->
+          <rect class="ln" pathLength="1" x="196" y="300" width="30" height="200" />
+          <rect class="ln" pathLength="1" x="186" y="292" width="50" height="18" rx="6" />
+          <rect class="ln" pathLength="1" x="203" y="330" width="16" height="140" stroke-width="1.4" />
+          <!-- الراس (يمين) -->
+          <rect class="ln" pathLength="1" x="980" y="120" width="30" height="380" />
+          <rect class="ln" pathLength="1" x="970" y="112" width="50" height="18" rx="6" />
+          <rect class="ln" pathLength="1" x="987" y="160" width="16" height="300" stroke-width="1.4" />
+          <!-- الجنب -->
+          <rect class="ln" pathLength="1" x="226" y="356" width="754" height="88" />
+          <!-- قاع الصندوق -->
+          <line class="ln" pathLength="1" x1="232" y1="438" x2="974" y2="438" stroke-width="1.2" stroke-opacity=".6" />
+          <!-- القاعدة والشرائح -->
+          <line class="ln" pathLength="1" x1="236" y1="348" x2="970" y2="348" />
+          <path class="ln" pathLength="1" d="M262 348v-10h26v10 M330 348v-10h26v10 M398 348v-10h26v10 M466 348v-10h26v10 M534 348v-10h26v10 M602 348v-10h26v10 M670 348v-10h26v10 M738 348v-10h26v10 M806 348v-10h26v10 M874 348v-10h26v10 M932 348v-10h26v10" stroke-width="1.6" />
+          <!-- vérin -->
+          <path class="ln" pathLength="1" d="M560 430 L700 360" stroke-width="3" />
+          <circle class="ln" pathLength="1" cx="560" cy="430" r="5" />
+          <circle class="ln" pathLength="1" cx="700" cy="360" r="5" />
+          <!-- خطوط المقاسات -->
+          <path class="ln dim" pathLength="1" d="M196 548 H1010 M196 538 v20 M1010 538 v20 M196 548 l14 -6 M196 548 l14 6 M1010 548 l-14 -6 M1010 548 l-14 6" stroke-width="1.3" />
+          <path class="ln dim" pathLength="1" d="M1056 112 V500 M1046 112 h20 M1046 500 h20 M1056 112 l-6 14 M1056 112 l6 14 M1056 500 l-6 -14 M1056 500 l6 -14" stroke-width="1.3" />
+          <!-- خطوط الإشارة للملاحظات -->
+          <path class="ln mark" pathLength="1" d="M995 250 C 900 210, 860 200, 820 200" stroke-width="1.6" />
+          <path class="ln mark" pathLength="1" d="M520 400 C 470 300, 430 260, 380 250" stroke-width="1.6" />
+          <path class="ln mark" pathLength="1" d="M630 395 C 660 470, 720 480, 760 470" stroke-width="1.6" />
+          <path class="ln mark" pathLength="1" d="M300 342 C 280 280, 260 240, 250 225" stroke-width="1.6" />
+        </g>
+        <g class="notes">
+          <text x="600" y="590" class="dim-t">190 سم</text>
+          <text x="1110" y="320" class="dim-t" transform="rotate(-90 1110 320)">95 سم</text>
+          <text x="815" y="192" class="note">لوح MDF مصبوغ</text>
+          <text x="375" y="242" class="note">صنوبر مجفف</text>
+          <text x="768" y="478" class="note">vérin × 2</text>
+          <text x="250" y="215" class="note">11 شريحة</text>
+        </g>
+        <defs>
+          <clipPath id="greet-clip"><rect class="greet-mask" x="1090" y="30" width="0" height="80" /></clipPath>
+        </defs>
+        <text class="greet" x="1090" y="84" clip-path="url(#greet-clip)">مرحبا بيك في الورشة، هبط معايا نوريك كيفاش نخدمو</text>
+        <g class="drawhand" transform="translate(1090 92)">
+          <g transform="rotate(-32)">
+            <path d="M-11 -235 h22 v-26 a6 6 0 0 0 -6 -6 h-10 a6 6 0 0 0 -6 6z" fill="#c98b86" />
+            <rect x="-11" y="-235" width="22" height="9" fill="#9aa1a6" />
+            <rect x="-11" y="-226" width="22" height="196" fill="#d9a441" stroke="#3A3A38" stroke-width="1.5" />
+            <path d="M-11 -30 L11 -30 L0 0 Z" fill="#e8c99a" stroke="#3A3A38" stroke-width="1.5" />
+            <path d="M-3.5 -9 L3.5 -9 L0 0 Z" fill="#3A3A38" />
+            <path d="M-34 -150 C -52 -110, -40 -70, -14 -62 C 2 -58, 20 -66, 28 -82 C 40 -104, 38 -138, 22 -160 C 4 -182, -24 -176, -34 -150 Z" fill="#d9b27a" stroke="#3A3A38" stroke-width="1.6" />
+            <path d="M-14 -62 C -10 -50, 4 -44, 14 -52 C 20 -58, 16 -70, 8 -70" fill="#d9b27a" stroke="#3A3A38" stroke-width="1.6" />
+            <path d="M22 -160 C 30 -170, 34 -186, 30 -200 L -22 -206 C -34 -186, -36 -170, -34 -150" fill="#3b4a52" stroke="#3A3A38" stroke-width="1.6" />
+            <path d="M-10 -120 C 0 -112, 12 -112, 20 -118 M-6 -100 C 2 -94, 12 -94, 22 -100" fill="none" stroke="#3A3A38" stroke-width="1.2" opacity=".6" />
+          </g>
+        </g>
+        <g class="titleblock">
+          <rect class="ln" pathLength="1" x="110" y="40" width="300" height="70" fill="none" stroke="currentColor" stroke-width="1.4" />
+          <text x="395" y="70" class="tb">سرير بصندوق تخزين — فردي</text>
+          <text x="395" y="96" class="tb small">الورشة، عين البيضة</text>
+        </g>
+      </svg>
+    </div>
+
+    <canvas class="stage" aria-hidden="true"></canvas>
+    <div class="mapview" aria-hidden="true">
+      <div class="maplabels"></div>
+      <div class="maphud mapcard">
+        <p class="mc-now"><span>الكاميو الآن في</span> <b data-mapstop>عين البيضة</b></p>
+        <div class="mc-ends"><span><i>A</i>عين البيضة</span><span><i>B</i>أبعد نقطة</span></div>
+        <div class="mc-bar"><span data-mapbar></span></div>
+        <p class="mc-km"><b data-kmcount dir="ltr">0</b> كم من <bdi data-kmtotal>0</bdi></p>
+        <p class="badge">توصيل في {stats.deliveryHours} ساعة كأقصى حد</p>
+      </div>
+      <ul class="stats">
+        {stats.items.map((it) => (
+          <li><span class="num">{it.prefix ?? ''}<bdi dir="ltr"><span data-to={it.value}>0</span>{it.suffix}</bdi></span><span class="lbl">{it.label}</span></li>
+        ))}
+      </ul>
+    </div>
+    <div class="dim" aria-hidden="true"></div>
+
+    <div class="copy">
+      {chapters.map((c, i) => (
+        <div class="chap" data-chap={i}>
+          <span class="step">{i + 1} / {chapters.length}</span>
+          {c.tag === 'h1' ? <h1>{c.title}</h1> : <h2>{c.title}</h2>}
+          {c.text && <p>{c.text}</p>}
+          <p class="hand">{c.note}</p>
+        </div>
+      ))}
+    </div>
+
+    <dl class="counter" aria-live="off">
+      <div><dt>قطع مركبة</dt><dd><span data-count="parts">0</span> / <span data-total="parts">0</span></dd></div>
+      <div><dt>vis مشدودة</dt><dd><span data-count="screws">0</span></dd></div>
+    </dl>
+
+    <a class="btn cta" href="#produits">اطلب سريرك</a>
+    <p class="hint">هبط بالصفحة</p>
+  </div>
+</section>
+
+<style>
+  .build{position:relative;height:660vh;background:var(--shadow)}
+  .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+  .paper{position:absolute;inset:0;background:url(/textures/kraft.jpg) center/cover var(--kraft);color:var(--graphite);display:flex;align-items:center;justify-content:flex-end;padding:6vh 3vw}
+  .paper::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 18vmax rgba(60,40,20,.35);pointer-events:none}
+  .plan{width:min(1000px,60vw);height:auto}
+  .plan .note{font-family:var(--hand);font-size:30px;fill:var(--mark);text-anchor:middle}
+  .plan .dim-t{font-family:var(--body);font-size:22px;fill:var(--graphite);text-anchor:middle}
+  .plan .tb{font-family:var(--display);font-size:22px;fill:var(--graphite);text-anchor:start}
+  .plan .tb.small{font-size:16px;font-family:var(--body)}
+  .plan .mark{color:var(--mark)}
+  .plan .greet{font-family:var(--hand);font-size:34px;fill:var(--mark)}
+  .plan .drawhand{pointer-events:none;filter:drop-shadow(6px 10px 6px rgba(60,40,20,.25))}
+  .stage{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+  .mapview{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;overflow:hidden}
+  .mapview::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 18vmax rgba(60,40,20,.35);pointer-events:none}
+  .maplabels{position:absolute;inset:0;overflow:hidden}
+  .maplabels :global(.pill){position:absolute;left:0;top:0;display:flex;align-items:center;gap:.45rem;white-space:nowrap;font-family:var(--body);font-size:.8rem;line-height:1;color:var(--graphite);background:rgba(243,233,210,.94);border:1.5px solid var(--graphite);padding:.4rem .75rem;border-radius:3px;box-shadow:0 8px 18px -10px rgba(40,25,10,.6);opacity:0;transition:opacity .35s;will-change:transform}
+  .maplabels :global(.pill.on){opacity:1}
+  .maplabels :global(.pill .n){font-family:var(--latin);color:var(--mark)}
+  .maplabels :global(.pill b){font-family:var(--hand);font-weight:700;font-size:1.05rem}
+  .maplabels :global(.pill .k){opacity:.7}
+  .maplabels :global(.pill.hq),.maplabels :global(.pill.dest){background:var(--walnut);color:var(--kraft-light);border-color:var(--walnut)}
+  .maplabels :global(.pill.hq .n),.maplabels :global(.pill.dest .n){color:var(--pine)}
+  .mapcard{position:absolute;inset-inline-end:5vw;bottom:7vh;width:min(23rem,40vw);background:rgba(243,233,210,.92);padding:1.1rem 1.4rem 1.2rem;box-shadow:0 18px 40px -20px rgba(40,25,10,.6);opacity:0;color:var(--graphite)}
+  .mc-now{font-size:.9rem;opacity:.75;line-height:1.4}
+  .mc-now b{display:block;font-family:var(--hand);font-size:1.7rem;color:var(--walnut);line-height:1.2;opacity:1}
+  .mc-ends{display:flex;justify-content:space-between;margin-top:.8rem;font-size:.85rem;font-weight:600}
+  .mc-ends i{font-style:normal;font-family:var(--latin);color:var(--mark);margin-inline-end:.35rem}
+  .mc-bar{margin-top:.45rem;height:6px;background:rgba(58,58,56,.18);overflow:hidden}
+  .mc-bar span{display:block;height:100%;background:var(--mark);transform:scaleX(0);transform-origin:right center}
+  .mc-km{margin-top:.55rem;font-size:.85rem;text-align:end}
+  .mc-km b{font-family:var(--latin);font-size:1.3rem;color:var(--walnut);font-weight:500;font-variant-numeric:tabular-nums}
+  .badge{margin-top:.7rem;display:inline-block;font-family:var(--display);font-weight:700;font-size:.9rem;color:var(--kraft-light);background:var(--mark);padding:.3rem .9rem;border-radius:2px;transform:rotate(-2deg);opacity:0}
+  .stats{list-style:none;padding:0;position:absolute;inset-inline-end:6vw;bottom:8vh;display:grid;grid-template-columns:repeat(2,minmax(9rem,1fr));gap:1.2rem 2.5rem;opacity:0;visibility:hidden;background:rgba(243,233,210,.92);padding:1.6rem 2rem;box-shadow:0 18px 40px -20px rgba(40,25,10,.6)}
+  .stats li{display:grid}
+  .stats .num{font-family:var(--latin);font-size:clamp(1.8rem,3vw,2.6rem);color:var(--walnut);line-height:1.1;font-variant-numeric:tabular-nums}
+  .stats .lbl{font-size:.95rem;color:var(--graphite)}
+  .dim{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 70% 40%,transparent 30%,rgba(10,8,6,.55));opacity:0}
+
+  .copy{position:absolute;inset-inline-start:5vw;top:50%;transform:translateY(-50%);width:min(30rem,34vw)}
+  .chap{position:absolute;width:100%;top:50%;transform:translateY(-50%);opacity:0;visibility:hidden}
+  .chap[data-chap="0"]{opacity:1;visibility:visible}
+  .step{font-family:var(--latin);font-size:.95rem;color:var(--walnut);letter-spacing:.05em}
+  .chap h1,.chap h2{font-size:clamp(2rem,3.5vw,3.3rem);margin:.3rem 0 .9rem;color:inherit}
+  .chap p{font-size:clamp(1rem,1.3vw,1.15rem);max-width:34ch}
+  .chap .hand{font-size:1.6rem;margin-top:.8rem}
+  .chap{color:var(--shadow)}
+  .copy.dark:not(.light) .chap{color:var(--kraft-light);text-shadow:0 2px 14px rgba(20,14,8,.9)}
+  .copy.dark:not(.light) .step{color:var(--pine)}
+  .copy.dark:not(.light) .hand{color:#e0715f}
+
+  .counter{position:absolute;inset-inline-end:5vw;top:6vh;display:flex;gap:2.2rem;color:var(--kraft-light);opacity:0;font-variant-numeric:tabular-nums}
+  .counter dt{font-size:.85rem;opacity:.75}
+  .counter dd{font-family:var(--latin);font-size:1.7rem;margin:0}
+  .cta{position:absolute;inset-inline-start:5vw;bottom:9vh;opacity:0;visibility:hidden}
+  .hint{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);font-size:.9rem;color:var(--graphite);opacity:.7}
+
+  /* بلا 3D: نعرضو المخطط والفصول كنص عادي */
+  .build.no3d{height:auto}
+  .build.no3d .pin{position:relative;height:auto;overflow:visible}
+  .build.no3d .paper{position:relative;min-height:70svh}
+  .build.no3d .plan .ln{stroke-dashoffset:0}
+  .build.no3d .mapview,.build.no3d .greet,.build.no3d .drawhand,.build.no3d .stage,.build.no3d .counter,.build.no3d .hint,.build.no3d .dim{display:none}
+  .build.no3d .copy{position:relative;inset:auto;transform:none;width:auto;padding:3rem 5vw;background:var(--kraft-light)}
+  .build.no3d .chap{position:relative;top:auto;transform:none;opacity:1;visibility:visible;margin-bottom:2.5rem}
+  .build.no3d .cta{position:relative;inset:auto;opacity:1;visibility:visible;margin:0 5vw 4rem}
+
+  @media (max-width:760px){
+    .paper{display:block;padding:20vh 0 0}.plan{display:block;width:118vw;max-width:none;margin-inline:-9vw}
+    .copy{top:auto;bottom:12vh;transform:none;width:auto;inset-inline-end:5vw}
+    .chap{top:auto;bottom:0;transform:none}
+    .chap h1,.chap h2{font-size:1.9rem}
+    .chap .hand{font-size:1.3rem}
+    .counter{top:4vh;gap:1.4rem}
+    .counter dd{font-size:1.3rem}
+    .build{height:800vh}
+    .mapcard{top:3vh;bottom:auto;inset-inline:5vw;width:auto;padding:.8rem 1rem 1rem}.mc-now b{font-size:1.2rem}.maplabels :global(.pill){font-size:.72rem;padding:.35rem .65rem}.stats{top:14vh;bottom:auto;inset-inline:5vw;padding:1rem 1.2rem;gap:.8rem 1.4rem}
+    .cta{bottom:4vh;inset-inline-start:auto;inset-inline-end:5vw}
+    .hint{display:none}
+  }
+</style>
+
+<script>
+  import { initBuildSequence } from '../scripts/build-sequence/index.js';
+  initBuildSequence(document.getElementById('build'));
+</script>

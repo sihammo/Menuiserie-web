@@ -1,0 +1,93 @@
+---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+import { readEvents, listProducts, listOrders } from '../../lib/store.js';
+import { SOURCE_LABELS } from '../../lib/analytics.js';
+
+const days = [1, 7, 30, 90].includes(+Astro.url.searchParams.get('d')) ? +Astro.url.searchParams.get('d') : 7;
+const since = new Date(); since.setHours(0, 0, 0, 0); since.setDate(since.getDate() - (days - 1));
+const ev = readEvents(since.getTime());
+const day = (t) => new Date(t).toISOString().slice(0, 10);
+const key = (e) => day(e.t) + e.v; // الزائر اليومي الفريد
+
+const views = ev.filter((e) => e.k === 'view');
+const visitors = new Set(views.map(key));
+const firstView = new Map(); views.forEach((e) => { if (!firstView.has(key(e))) firstView.set(key(e), e); });
+const withKind = (k) => new Set(ev.filter((e) => e.k === k).map(key));
+const story = withKind('story'), wa = withKind('wa'), call = withKind('call');
+const prodView = new Set(views.filter((e) => e.p.startsWith('/produits/')).map(key));
+const orders = listOrders().filter((o) => new Date(o.createdAt).getTime() >= since.getTime());
+const ordersWeb = orders.filter((o) => o.source !== 'messenger').length;
+const ordersMsg = orders.length - ordersWeb;
+
+// سلسلة الأيام
+const series = [];
+for (let i = 0; i < days; i++) {
+  const d = new Date(since); d.setDate(d.getDate() + i); const k = day(d.getTime() + 12 * 3600 * 1000);
+  series.push({ k: d.toLocaleDateString('fr-DZ', { day: '2-digit', month: '2-digit' }), n: new Set(views.filter((e) => day(e.t) === k).map(key)).size, v: views.filter((e) => day(e.t) === k).length });
+}
+const maxN = Math.max(1, ...series.map((s) => s.n));
+
+const count = (arr, f) => { const m = new Map(); arr.forEach((x) => m.set(f(x), (m.get(f(x)) || 0) + 1)); return [...m].sort((a, b) => b[1] - a[1]); };
+const fv = [...firstView.values()];
+const sources = count(fv, (e) => e.s);
+const devices = count(fv, (e) => e.d);
+const names = Object.fromEntries(listProducts().map((p) => [p.slug, p.name]));
+const prodRank = count(views.filter((e) => e.p.startsWith('/produits/')), (e) => e.p.split('/')[2]);
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const funnel = [
+  ['زاروا السيت', visitors.size],
+  ['وصلوا لقسم المنتوجات', story.size],
+  ['شافوا صفحة منتوج', prodView.size],
+  ['طلبو (من السيت)', ordersWeb],
+];
+---
+<Admin title="الزيارات" tab="stats">
+  <nav class="rng">{[[1, 'اليوم'], [7, '7 أيام'], [30, '30 يوم'], [90, '90 يوم']].map(([d, l]) => <a href={`/admin/stats?d=${d}`} class={d === days ? 'on' : ''}>{l}</a>)}</nav>
+  <p class="meta">الزائر = جهاز واحد في اليوم. ما نخزنوش الـIP ولا نستعملو كوكيز، والبوتات وزياراتك أنت ما تتحسبش.</p>
+
+  <div class="kpis">
+    <div><b>{visitors.size}</b>زائر</div>
+    <div><b>{views.length}</b>مشاهدة صفحة</div>
+    <div><b>{wa.size}</b>ضغطو واتساب</div>
+    <div><b>{call.size}</b>ضغطو اتصال</div>
+    <div><b>{orders.length}</b>طلب ({ordersWeb} سيت · {ordersMsg} ماسنجر)</div>
+  </div>
+
+  <h2 class="s">الزوار يوم بيوم</h2>
+  <div class="bars" style={`--n:${series.length}`}>
+    {series.map((s) => <div class="col" title={`${s.k}: ${s.n} زائر، ${s.v} مشاهدة`}><span class="v">{s.n || ''}</span><i style={`height:${(s.n / maxN) * 100}%`}></i>{days <= 31 && <small>{s.k}</small>}</div>)}
+  </div>
+
+  <h2 class="s">المسار: من الزيارة للطلب</h2>
+  <div class="card">
+    {funnel.map(([l, n], i) => (
+      <div class="fr"><span>{l}</span><div class="track"><i style={`width:${pct(n, funnel[0][1])}%`}></i></div><b>{n}{i > 0 && funnel[0][1] ? ` · ${pct(n, funnel[0][1])}%` : ''}</b></div>
+    ))}
+  </div>
+
+  <div class="two">
+    <div>
+      <h2 class="s">من وين جاو؟</h2>
+      <div class="card">{sources.length === 0 && <span class="meta">ما كاين حتى زيارة</span>}{sources.map(([k, n]) => <div class="fr"><span>{SOURCE_LABELS[k] || k}</span><div class="track"><i style={`width:${pct(n, fv.length)}%`}></i></div><b>{n}</b></div>)}</div>
+    </div>
+    <div>
+      <h2 class="s">الجهاز</h2>
+      <div class="card">{devices.map(([k, n]) => <div class="fr"><span>{k === 'mobile' ? 'تيليفون' : 'كمبيوتر'}</span><div class="track"><i style={`width:${pct(n, fv.length)}%`}></i></div><b>{n} · {pct(n, fv.length)}%</b></div>)}</div>
+    </div>
+  </div>
+
+  <h2 class="s">أكثر المنتوجات مشاهدة</h2>
+  <table><thead><tr><th>المنتوج</th><th>مشاهدات</th></tr></thead>
+    <tbody>{prodRank.length === 0 && <tr><td colspan="2">ما كاين حتى مشاهدة</td></tr>}{prodRank.map(([slug, n]) => <tr><td>{names[slug] || slug}</td><td>{n}</td></tr>)}</tbody></table>
+</Admin>
+<style>
+  .rng{display:flex;gap:.4rem;margin-bottom:.8rem}.rng a{padding:.4rem 1rem;background:var(--k);text-decoration:none;color:inherit;border-bottom:3px solid transparent}.rng a.on{border-color:var(--w);font-weight:700}
+  .meta{font-size:.9rem;opacity:.75}h2.s{font-size:1.1rem;margin:1.6rem 0 .6rem}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.8rem;margin-top:.8rem}.kpis div{background:var(--k);padding:.9rem 1rem;font-size:.9rem}.kpis b{display:block;font-size:2rem;color:var(--w);line-height:1.1}
+  .bars{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:3px;align-items:end;height:11rem;background:var(--k);padding:.8rem .8rem 1.6rem}
+  .col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}.col i{display:block;width:100%;background:var(--w);min-height:2px}.col .v{font-size:.7rem}.col small{position:absolute;bottom:-1.3rem;font-size:.6rem;opacity:.7;white-space:nowrap}
+  .fr{display:grid;grid-template-columns:9rem 1fr auto;gap:.8rem;align-items:center;padding:.25rem 0}.track{background:#cdb48e;height:.8rem}.track i{display:block;height:100%;background:var(--w)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media (max-width:700px){.two{grid-template-columns:1fr}.fr{grid-template-columns:7rem 1fr auto}}
+</style>

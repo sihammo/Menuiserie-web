@@ -1,0 +1,33 @@
+---
+import { adminUser, unhandledCount } from '../lib/store.js';
+const { title, tab } = Astro.props;
+const tabs = [['orders', '/admin', 'الطلبات'], ['products', '/admin/products', 'المنتوجات'], ['reviews', '/admin/reviews', 'التعليقات'], ['stats', '/admin/stats', 'الزيارات'], ['meta', '/admin/meta', 'ماسنجر']];
+const unread = unhandledCount();
+---
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>{title} — لوحة التحكم</title>
+<style is:global>
+  :root{--k:#E3D3B4;--w:#6E3B1C;--d:#1E1A16;--r:#B3352B}
+  *{box-sizing:border-box}body{margin:0;background:#d9c9a8;color:var(--d);font-family:'IBM Plex Sans Arabic',Tahoma,sans-serif;line-height:1.6}
+  header.top{background:var(--d);color:var(--k);padding:1rem 5vw;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+  header.top h1{margin:0;font-size:1.2rem} header.top form{display:inline}
+  nav.tabs{background:#2b241d;padding:0 5vw;display:flex;gap:.2rem;overflow-x:auto}
+  nav.tabs a{color:var(--k);text-decoration:none;padding:.7rem 1.2rem;border-bottom:3px solid transparent;white-space:nowrap}
+  nav.tabs a.on{border-color:#e9866f;font-weight:700;background:#1E1A16}
+  main.adm{padding:1.5rem 5vw 5rem;max-width:1200px;margin:auto}
+  input,select,button,.btn,textarea{font:inherit;padding:.5rem .8rem;border:1.5px solid #8c6b45;background:#fbf6ea;color:var(--d);border-radius:3px;text-decoration:none;cursor:pointer}
+  input[type=text],input[type=number],input:not([type]),textarea{cursor:text}
+  button.p,.btn.p{background:var(--w);color:var(--k);border-color:var(--w)} button.x{color:var(--r);border-color:var(--r)}
+  .card{background:var(--k);padding:1rem 1.2rem;margin-bottom:.9rem}
+  .badge{display:inline-block;padding:.1rem .6rem;border-radius:99px;font-size:.8rem;color:#fff;background:#777}
+  .badge.new{background:var(--r)}.badge.confirmed{background:#2f6fa8}.badge.delivered,.badge.ok{background:#2f7d4f}.badge.canceled{background:#777}
+  .msg{font-weight:600;padding:.6rem 1rem;background:#fbf6ea;margin-bottom:1rem;border-inline-start:4px solid var(--w)}
+  .empty{text-align:center;padding:3rem;opacity:.7}
+  table{width:100%;border-collapse:collapse;background:var(--k)} th,td{padding:.55rem .8rem;text-align:start;border-bottom:1px solid #c9b78f} th{background:#cdb48e}
+  .star{color:#c98a00;letter-spacing:.1em}
+  .dot{background:var(--r);color:#fff;border-radius:99px;padding:0 .45rem;font-size:.75rem;margin-inline-start:.4rem}
+</style></head><body>
+<header class="top"><h1>لوحة التحكم — Chemami Meuble Nadhir</h1>
+  <div><a class="btn" href="/" target="_blank">الموقع</a> <form method="post" action="/api/admin/logout"><button>خروج ({adminUser()})</button></form></div></header>
+<nav class="tabs">{tabs.map(([k, h, l]) => <a href={h} class={k === tab ? 'on' : ''}>{l}{k === 'meta' && unread > 0 && <span class="dot">{unread}</span>}</a>)}</nav>
+<main class="adm"><slot /></main></body></html>

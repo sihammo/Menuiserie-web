@@ -1,0 +1,40 @@
+---
+export const prerender = false; // المنتوجات تتحمل من الأدمن
+import Base from '../layouts/Base.astro';
+import BuildSequence from '../components/BuildSequence.astro';
+import ProductsBar from '../components/ProductsBar.astro';
+import Woods from '../components/Woods.astro';
+import Workshop from '../components/Workshop.astro';
+---
+<Base title="Chemami Meuble Nadhir — أثاث من الورشة، عين البيضة" description="أسرة بصندوق تخزين، قواعد سرير وطاولات جانبية، مصنوعة باليد في ورشتنا بعين البيضة، أم البواقي. توصيل لـ 69 ولاية.">
+  <main>
+    <BuildSequence />
+    <ProductsBar />
+    <Woods />
+    <Workshop />
+  </main>
+  <footer>
+    <div class="wrap cols">
+      <div>
+        <p class="brand">Chemami Meuble Nadhir</p>
+        <p>عين البيضة، أم البواقي</p>
+        <p>توصيل لـ 69 ولاية</p>
+      </div>
+      <div>
+        <p>الهاتف: <a href="tel:+213698074263" dir="ltr">0698 07 42 63</a></p>
+        <p><a href="https://www.facebook.com/profile.php?id=100083111207890" rel="noopener">صفحة الفيسبوك</a></p>
+        <p><a href="#produits">المنتوجات</a></p>
+      </div>
+      <div class="map" aria-label="الخريطة (تتزاد من بعد)">الخريطة</div>
+    </div>
+  </footer>
+  <a class="wa" href="https://wa.me/213698074263" aria-label="تواصل معنا على واتساب">واتساب</a>
+</Base>
+<style>
+  footer{background:#15120f;color:var(--kraft);padding:4rem 0 6rem}
+  .cols{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:2rem}
+  .brand{font-family:var(--display);font-size:1.6rem;color:var(--kraft-light)}
+  .map{border:1px dashed #5b4a37;min-height:140px;display:grid;place-items:center;color:#7d6a52}
+  .wa{position:fixed;inset-inline-start:1.2rem;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));background:#25D366;color:#fff;font-weight:600;text-decoration:none;padding:.7rem 1.2rem;border-radius:999px;z-index:40;box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}}
+</style>

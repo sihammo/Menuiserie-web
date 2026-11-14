@@ -1,0 +1,35 @@
+---
+const woods = [
+  { name: 'صنوبر طبيعي', use: 'الهياكل والشرائح. يقعد ينشف في الورشة قبل القص، باش يبقى مستوي سنين.', sample: 'pine' },
+  { name: 'MDF', use: 'الألواح العراض وقاع الصندوق: سطح مستوي ما يتشققش، ويقبل الصباغة مليح.', sample: 'mdf' },
+  { name: 'صنوبر مصبوغ', use: 'الراس والرجلين: صباغة بنية باليد وطبقة حماية فوقها.', sample: 'stained' },
+];
+---
+<section class="woods" aria-labelledby="bois-titre">
+  <div class="wrap">
+    <h2 id="bois-titre">الخشب اللي نخدمو بيه</h2>
+    <p class="lead">ما نخبيو والو: هذا هو الخشب، وهذا وين يروح كل نوع.</p>
+    <ul>
+      {woods.map((w) => (
+        <li>
+          <span class={`sample ${w.sample}`} aria-hidden="true"></span>
+          <h3>{w.name}</h3>
+          <p>{w.use}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .woods{padding:7rem 0;background:var(--kraft-light)}
+  h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+  .lead{margin-top:.6rem;max-width:44ch}
+  ul{list-style:none;padding:0;margin-top:3.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem}
+  .sample{display:block;height:200px;border-radius:2px;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 14px 24px -16px rgba(40,25,10,.6);margin-bottom:1.3rem}
+  .pine{background:url(/textures/pine.jpg) center/180% auto}
+  .mdf{background:url(/textures/mdf.jpg) center/cover}
+  .stained{background:linear-gradient(rgba(110,59,28,.78),rgba(70,35,15,.82)),url(/textures/pine.jpg) 30% center/180% auto;background-blend-mode:multiply}
+  h3{font-size:1.45rem}
+  li p{margin-top:.4rem;max-width:34ch}
+  @media (max-width:860px){ul{grid-template-columns:1fr}.sample{height:140px}}
+</style>

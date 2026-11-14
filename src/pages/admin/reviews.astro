@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+import { listReviews, listProducts } from '../../lib/store.js';
+const reviews = listReviews();
+const names = Object.fromEntries(listProducts().map((p) => [p.slug, p.name]));
+const fmt = (d) => new Date(d).toLocaleString('fr-DZ', { dateStyle: 'short', timeStyle: 'short' });
+---
+<Admin title="التعليقات" tab="reviews">
+  <p class="meta">التعليقات تبان في السيت مباشرة، وتنجم تحذف أي وحدة هنا.</p>
+  {reviews.length === 0 && <p class="empty">ما كاينش تعليقات</p>}
+  {reviews.map((r) => (
+    <article class="card rv">
+      <div>
+        <b>{r.name}</b> <span class="star">{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</span>
+        <div class="meta">{names[r.slug] || r.slug} · {fmt(r.createdAt)}</div>
+        <p>{r.text}</p>
+      </div>
+      <form method="post" action="/api/admin/review" onsubmit="return confirm('نحيو هذا التعليق؟')"><input type="hidden" name="id" value={r.id} /><button class="x">حذف</button></form>
+    </article>
+  ))}
+</Admin>
+<style>
+  .rv{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}.rv p{margin:.3rem 0 0}.meta{font-size:.9rem;opacity:.75}
+</style>
