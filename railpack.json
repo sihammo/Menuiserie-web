@@ -1,0 +1,8 @@
+{
+  "build": {
+    "cmds": ["npm run build"]
+  },
+  "deploy": {
+    "startCommand": "node ./dist/server/entry.mjs"
+  }
+}
