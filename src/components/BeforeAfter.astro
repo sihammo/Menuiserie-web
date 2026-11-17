@@ -1,0 +1,140 @@
+---
+// مشهد السكرول: الخشب الخام يتفكّ ألواح ألواح ويبان السرير، ومن بعد الزبون يبدل لون الراس بصور حقيقية.
+// الصور: public/images/bois-brut.jpg و public/images/lits/*.jpg. غير الألوان والأرقام هنا في variants.
+import { getProduct } from '../lib/store.js';
+const N = 8; // عدد الألواح
+const variants = [
+  { img: 'n02', color: '#A8556A', label: 'وردي', num: '02', desc: 'خشب أبيض + راس منجّد وردي', slug: 'lit-02' },
+  { img: 'n04', color: '#C0707E', label: 'وردي بالأزرار', num: '04', desc: 'خشب أبيض + راس منجّد وردي بالأزرار', slug: 'lit-04', btn: true },
+  { img: 'n07', color: '#5B5A58', label: 'رمادي بالأزرار', num: '07', desc: 'خشب أبيض + راس منجّد رمادي بالأزرار', slug: 'lit-07', btn: true },
+  { img: 'n14', color: '#1459A8', label: 'أزرق', num: '14', desc: 'خشب أبيض + راس منجّد أزرق', slug: 'lit-14' },
+  { img: 'n17', color: '#1459A8', label: 'أزرق بالأزرار', num: '17', desc: 'خشب أبيض + راس منجّد أزرق بالأزرار', slug: 'lit-17', btn: true },
+  { img: 'n08', color: '#A98C6A', label: 'بيج', num: '08', desc: 'خشب أبيض + راس منجّد بيج', slug: 'lit-08' },
+].map((v) => ({ ...v, href: getProduct(v.slug) ? `/produits/${v.slug}` : '' }));
+const first = variants[0];
+---
+<section class="ba" id="avant-apres" aria-labelledby="ba-titre">
+  <div class="wrap head">
+    <h2 id="ba-titre">من الخشب الخام لسريرك</h2>
+    <p class="lead">هذا الصنوبر والـMDF في ورشتنا. كمّل سكرول وشوف السرير كيفاش يبان، وبعدها اختار لون الراس.</p>
+  </div>
+
+  <figure class="stage" dir="ltr">
+    <div class="bedbox"><img class="bed" src={`/images/lits/${first.img}.jpg`} alt="سرير جاهز بخشب أبيض وراس منجّد" width="810" height="1080" /></div>
+    <div class="planks swap" aria-hidden="true">
+      {Array.from({ length: N }).map((_, i) => <div class="strip" style={`--i:${i}`}><img src={`/images/lits/${first.img}.jpg`} alt="" /></div>)}
+    </div>
+    <div class="planks wood" aria-hidden="true">
+      {Array.from({ length: N }).map((_, i) => <div class="strip" style={`--i:${i}`}><img src="/images/bois-brut.jpg" alt="" /></div>)}
+    </div>
+    <span class="cue" aria-hidden="true">كمّل سكرول ↓</span>
+  </figure>
+
+  <div class="pick">
+    <form class="sw-form" aria-label="لون الراس">
+      {variants.map((v, i) => (
+        <label class:list={['sw', { 'sw-btn': v.btn }]} title={`${v.label} · سرير رقم ${v.num}`}>
+          <input type="radio" name="head" value={v.num} checked={i === 0}
+            data-img={`/images/lits/${v.img}.jpg`} data-num={v.num} data-label={v.label} data-desc={v.desc} data-href={v.href} />
+          <span class="dot" style={`--c:${v.color}`}></span>
+        </label>
+      ))}
+    </form>
+    <p class="info" aria-live="polite"><b class="i-title">سرير رقم {first.num}</b> <span class="i-desc">{first.desc}</span></p>
+    <a class="btn i-go" href={first.href || '#produits'} hidden={!first.href}>اطلب هذا ←</a>
+    <p class="cap">الخشب الخام في الورشة، والسراير الجاهزة من الورشة (نفس الهيكل، ألوان راس مختلفة).</p>
+  </div>
+</section>
+
+<style>
+  .ba{background:var(--kraft-light);padding:2rem 0 1.2rem;min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:.8rem;overflow-x:clip}
+  .head h2{font-size:clamp(1.8rem,4vw,3rem)}
+  .head .lead{max-width:50ch;margin-top:.3rem;font-size:clamp(.95rem,1.6vw,1.1rem)}
+  .stage{position:relative;margin:0 auto;height:min(50svh,600px);aspect-ratio:3/4;max-width:92vw}
+  .bedbox{position:absolute;inset:0;overflow:hidden;background:#d9c8a6;box-shadow:0 18px 30px -18px rgba(40,25,10,.6)}
+  .bed{width:100%;height:100%;object-fit:cover;display:block}
+  .planks{position:absolute;inset:0;pointer-events:none}
+  .strip{position:absolute;left:0;right:0;top:calc(var(--i) * 100% / 8);height:calc(100% / 8 + 1px);overflow:hidden;box-shadow:0 8px 16px -8px rgba(30,20,10,.55);will-change:transform}
+  .strip img{position:absolute;left:0;width:100%;height:800%;top:calc(var(--i) * -100%);object-fit:cover}
+  .swap .strip{display:none}
+  .wood{display:none}
+  .ba.anim .wood{display:block}
+  .cue{position:absolute;left:0;right:0;bottom:1rem;text-align:center;z-index:3;display:none;font-family:var(--hand,inherit);font-size:1.25rem;color:var(--kraft-light);text-shadow:0 2px 8px rgba(0,0,0,.7);pointer-events:none}
+  .ba.anim .cue{display:block}
+  .pick{display:grid;justify-items:center;gap:.6rem;text-align:center;padding:0 1rem}
+  .sw-form{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center}
+  .sw{position:relative;cursor:pointer;width:44px;height:44px}
+  .sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;width:100%;height:100%}
+  .dot{display:block;width:100%;height:100%;border-radius:50%;background:var(--c);border:3px solid var(--kraft-light);box-shadow:0 0 0 1.5px rgba(30,26,22,.45);transition:transform .15s,box-shadow .15s}
+  .sw-btn .dot::after{content:"";position:absolute;inset:0;margin:auto;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:-9px 0 0 rgba(255,255,255,.85),9px 0 0 rgba(255,255,255,.85)}
+  .sw input:checked + .dot{transform:scale(1.12);box-shadow:0 0 0 3px var(--walnut)}
+  .sw input:focus-visible + .dot{outline:3px solid var(--mark);outline-offset:3px}
+  .info{font-size:1.05rem}
+  .i-desc{opacity:.8}
+  .cap{font-size:.85rem;color:var(--walnut);opacity:.85}
+  /* الاختيارات تبان ملي يكمّل المشهد (ولا على طول بلا أنيميشن) */
+  .ba.anim .pick{opacity:.0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s}
+  .ba.anim.done .pick{opacity:1;transform:none;pointer-events:auto}
+  @media (max-width:700px){.ba{padding:1.4rem 0 1rem}.stage{height:min(46svh,480px)}.cap{display:none}}
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root = document.querySelector('.ba') as HTMLElement | null;
+  if (root) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sign = (i: number) => (i % 2 ? 1 : -1);
+
+    // 1) الخشب يتفكّ مع السكرول
+    if (!reduced) {
+      root.classList.add('anim');
+      const strips = gsap.utils.toArray<HTMLElement>('.wood .strip', root);
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.inOut' },
+        scrollTrigger: {
+          trigger: root, start: 'top top', end: '+=150%', pin: true, scrub: 0.7, anticipatePin: 1, invalidateOnRefresh: true,
+          onUpdate: (self) => root.classList.toggle('done', self.progress > 0.9),
+        },
+      });
+      const stage = root.querySelector('.stage') as HTMLElement;
+      // الألواح تخرج من الشاشة كاملة (ماشي تبقى مبعثرة على الجنبين)
+      const out = (i: number) => sign(i) * (innerWidth / 2 + stage.offsetWidth / 2 + 60);
+      strips.forEach((s, i) => tl.to(s, { x: () => out(i), rotation: sign(i) * (2 + (i % 3)), duration: 1 }, i * 0.18));
+      tl.to('.cue', { opacity: 0, duration: 0.25 }, 0);
+    }
+
+    // 2) تبديل لون الراس بنفس حركة الألواح
+    const form = root.querySelector('.sw-form') as HTMLFormElement;
+    const bed = root.querySelector('.bed') as HTMLImageElement;
+    const swapEls = gsap.utils.toArray<HTMLElement>('.swap .strip', root);
+    const swapImgs = swapEls.map((s) => s.querySelector('img') as HTMLImageElement);
+    const go = root.querySelector('.i-go') as HTMLAnchorElement;
+    // نحمّلو الصور من قبل باش التبديل يكون فوري
+    const preload = () => root.querySelectorAll<HTMLInputElement>('.sw input').forEach((i) => { new Image().src = i.dataset.img!; });
+    (window.requestIdleCallback || ((f: () => void) => setTimeout(f, 1500)))(preload);
+
+    form.addEventListener('change', async () => {
+      const inp = form.querySelector('input:checked') as HTMLInputElement;
+      root.querySelector('.i-title')!.textContent = `سرير رقم ${inp.dataset.num}`;
+      root.querySelector('.i-desc')!.textContent = inp.dataset.desc!;
+      go.hidden = !inp.dataset.href;
+      if (inp.dataset.href) go.href = inp.dataset.href;
+      const next = inp.dataset.img!;
+      if (bed.getAttribute('src') === next) return;
+      if (reduced) { bed.src = next; return; }
+      const im = new Image(); im.src = next;
+      try { await im.decode(); } catch {}
+      gsap.killTweensOf(swapEls);
+      swapImgs.forEach((i) => { i.src = bed.getAttribute('src')!; });
+      gsap.set(swapEls, { display: 'block', x: 0, rotation: 0 });
+      bed.src = next;
+      gsap.to(swapEls, {
+        x: (i) => sign(i) * (innerWidth / 2 + bed.offsetWidth / 2 + 60), rotation: (i) => sign(i) * (2 + (i % 3)), duration: 0.8, ease: 'power2.in',
+        stagger: { each: 0.06 }, onComplete: () => gsap.set(swapEls, { display: 'none' }),
+      });
+    });
+  }
+</script>

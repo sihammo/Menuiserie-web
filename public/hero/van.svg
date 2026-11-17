@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300">
+  <!-- كاميو التوصيل، متوجه لليسار -->
+  <ellipse cx="330" cy="282" rx="300" ry="12" fill="#000" opacity=".25"/>
+  <path d="M40 150 C40 120 60 104 92 100 L170 92 L200 92 L200 250 L40 250 Z" fill="#6E3B1C"/>
+  <path d="M68 116 L150 108 L150 160 L58 160 C58 140 60 124 68 116 Z" fill="#2a3a44"/>
+  <path d="M74 122 L138 116 L138 132 L72 140 Z" fill="#fff" opacity=".18"/>
+  <rect x="196" y="40" width="410" height="210" rx="10" fill="#E3D3B4"/>
+  <rect x="196" y="40" width="410" height="16" rx="8" fill="#CDB48E"/>
+  <path d="M216 214 H586" stroke="#6E3B1C" stroke-width="10"/>
+  <text x="401" y="132" text-anchor="middle" font-family="Georgia, serif" font-size="46" font-weight="700" fill="#6E3B1C">CHEMAMI</text>
+  <text x="401" y="172" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#6E3B1C">Meuble Nadhir</text>
+  <rect x="30" y="226" width="590" height="26" rx="8" fill="#3a2a20"/>
+  <rect x="26" y="196" width="22" height="14" rx="3" fill="#ffd27a"/>
+  <g class="w"><circle cx="118" cy="252" r="34" fill="#1E1A16"/><circle cx="118" cy="252" r="14" fill="#8a8f93"/></g>
+  <g class="w"><circle cx="500" cy="252" r="34" fill="#1E1A16"/><circle cx="500" cy="252" r="14" fill="#8a8f93"/></g>
+</svg>

@@ -225,7 +225,6 @@ export function initBuildSequence(section) {
     .to(cam, { angle: 0.6, dist: 2.4, height: 1.05, duration: 1.4, ease: 'none' }, 3.2);
 
   // 3. القص + النشارة
-  chapter(2, 4.6);
   tl.to(blade.material, { opacity: 0.95, duration: 0.15 }, 4.8)
     .to(blade.position, { x: 0.35, duration: 1.1, ease: 'none' }, 4.8)
     .to(sawdust.state, { t: 1, duration: 1.3, ease: 'none' }, 4.85)
@@ -233,7 +232,6 @@ export function initBuildSequence(section) {
     .to(cam, { angle: 0.95, dist: 5.0, height: 2.0, ty: 0.55, duration: 1.4, ease: 'power1.inOut' }, 5.6);
 
   // 4. التركيب
-  chapter(3, 6.4);
   tl.to(planks.map((p) => p.position), { y: '+=3', duration: 0.6, ease: 'power2.in', stagger: 0.05 }, 6.2)
     .set(pile, { visible: false }, 6.95);
 
@@ -268,19 +266,17 @@ export function initBuildSequence(section) {
   tl.to(cam, { angle: 0.2, duration: 4.6, ease: 'none' }, 6.6);
 
   // 5. الصباغة
-  chapter(4, 11.3);
   tl.to(M.wipe, { value: -0.05, duration: 1.4, ease: 'power1.inOut' }, 11.5)
     .to(cam, { angle: -0.15, height: 1.8, dist: 4.8, duration: 1.4, ease: 'none' }, 11.3);
 
   // 6. فتح الصندوق
-  chapter(5, 13.0);
   tl.to(bed.lift.rotation, { x: 0.62, duration: 1.1, ease: 'power1.inOut' }, 13.2)
     .to(bed.pistons.map((p) => p.rotation), { x: 1.05, duration: 1.1, ease: 'power1.inOut' }, 13.2)
     .to(cam, { angle: -0.55, height: 1.85, dist: 4.7, ty: 0.5, duration: 1.6, ease: 'none' }, 13.0)
     .to(cta, { autoAlpha: 1, duration: 0.4 }, 14.0);
 
   // 7. قطع أخرى على الطلب
-  chapter(6, 15.0);
+  chapter(2, 15.0);
   tl.to(bed.lift.rotation, { x: 0, duration: 0.6, ease: 'power1.inOut' }, 15.0)
     .to(bed.pistons.map((p) => p.rotation), { x: 0.45, duration: 0.6, ease: 'power1.inOut' }, 15.0)
     .to(counter, { autoAlpha: 0, duration: 0.3 }, 15.0)
@@ -290,7 +286,7 @@ export function initBuildSequence(section) {
   });
 
   // 8. الكاميو
-  chapter(7, 17.0);
+  chapter(3, 17.0);
   const wheelSpin = { v: 0 };
   // الضو يوصل قبل الكاميو، باش يبان باللي جاي
   tl.to(T.glow, { intensity: 5, duration: 1.0, ease: 'power1.in' }, 16.3)
@@ -308,7 +304,6 @@ export function initBuildSequence(section) {
     .to(wheelSpin, { v: 75, duration: 1.0, ease: 'power2.in' }, 19.7);
 
   // 9. الطريق: الكاميو يخرج من الورشة، يوصل للزبون ويسلّم السرير (مشهد قصير وخفيف)
-  chapter(8, 20.6);
   tl.to(canvas, { opacity: 0, duration: 0.3, ease: 'none' }, 20.6)
     .to('.build .dim', { opacity: 0, duration: 0.3 }, 20.2)
     .to(mapview, { autoAlpha: 1, duration: 0.6 }, 20.4)
@@ -319,32 +314,32 @@ export function initBuildSequence(section) {
     .to(roadState, { hand: 1, duration: 1.6, ease: 'none' }, 25.7);
 
   // 10. أرقام الورشة: تبان مع التسليم (بلا سكرول زايد)
-  chapter(9, 26.6);
   tl.to(maphud, { opacity: 0, duration: 0.3 }, 26.4)
     .to(statsBox, { autoAlpha: 1, duration: 0.4 }, 26.6)
     .to(statVals, { v: 1, duration: 1.0, ease: 'power1.out' }, 26.7)
     .to({}, { duration: 0.7 }, 27.3);
 
   // ---------- ربط السكرول بالتايملاين ----------
-  // المقدمة (المخطط، 0 → 3.1 في التايملاين) تاخذ غير 1.7 من السكرول، وباقي القصة بنفس السرعة.
-  // هكذا نقصنا وقت البداية بلا ما نبدلو توقيت حركة النجار والكاميو.
-  const W_U = 1.7, W_T = 3.1, SHIFT = W_T - W_U;
-  const total = tl.duration() - SHIFT;                       // طول السكرول بوحدات التايملاين
-  const uToT = (u) => (u < W_U ? (u * W_T) / W_U : u + SHIFT);
-  const tToU = (t) => (t < W_T ? (t * W_U) / W_T : t - SHIFT);
+  // القصة 3 سكرولات (beats): 1) من المخطط للسرير  2) القطع الأخرى  3) الكاميو والتوصيل.
+  // نحذفو الخطوات الطويلة (اختيار الخشب، القص، فتح الصندوق، الأرقام) ونمرّو عليها كقطعة سريعة (f صغير)،
+  // أما المقاطع اللي تبقى (التركيب، الصباغة، الأثاث، الكاميو) سرعتها كيما كانت (f = 1).
+  // PT = حدود المقاطع في التايملاين، PF = كم يتاخذ كل مقطع من السكرول.
+  const PT = [0, 3.1, 6.4, 8.8, 11.3, 12.9, 15.0, 16.8, 18.5, 20.6, 25.2];
+  const PF = [1.7 / 3.1, 0.25, 1.0, 0.3, 0.9, 0.15, 1.3, 1.0, 0.9, 0.5];
+  const PU = [0];
+  PF.forEach((f, i) => PU.push(PU[i] + (PT[i + 1] - PT[i]) * f));
+  const total = PU[PU.length - 1];                              // طول السكرول بوحدات السكرول
+  const seg = (arr, v) => { let i = arr.length - 2; while (i > 0 && v < arr[i]) i--; return i; };
+  const tToU = (t) => { const i = seg(PT, t); return PU[i] + (Math.min(t, PT[PT.length - 1]) - PT[i]) * PF[i]; };
+  const uToT = (u) => { const i = seg(PU, u); return PT[i] + (Math.min(u, total) - PU[i]) / PF[i]; };
   const smooth = isMobile ? 1.6 : 0.8;
+  // كل سحبة تدخل فصل كامل: نوقفو عند نهاية كل واحد (المخطط→السرير مصبوغ، الأثاث، التوصيل)
+  const stops = [0, 12.9, 16.8, 25.2].map((t) => tToU(t) / total);
   ScrollTrigger.create({
     trigger: section, start: 'top top', end: 'bottom bottom',
     onRefresh: (self) => tl.time(uToT(self.progress * total)),
     onUpdate: (self) => gsap.to(tl, { time: uToT(self.progress * total), duration: smooth, ease: 'power3', overwrite: true }),
-    // على التيليفون: كل سحبة توقف عند نهاية فصل باش الأنيميشن ما يجريش
-    snap: isMobile ? {
-      snapTo: (v) => {
-        const stops = [0, 3.1, 4.6, 6.4, 8.8, 11.3, 13.0, 15.0, 17.0, 18.6, 19.7, 20.6, 23.4, 25.7, 26.6, tl.duration()].map((t) => tToU(t) / total);
-        return stops.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
-      },
-      duration: { min: 1.2, max: 3 }, delay: 0.15, ease: 'power1.inOut', inertia: false,
-    } : false,
+    snap: { snapTo: stops, directional: true, duration: { min: 1.2, max: 3 }, delay: 0.12, ease: 'power1.inOut', inertia: false },
   });
 
   // ---------- النجار ----------

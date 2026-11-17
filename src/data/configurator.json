@@ -1,0 +1,46 @@
+{
+  "_note": "هنا تبدل كل شيء تاع «ركّب سريرك»: المقاسات (بالسنتيمتر)، الأسعار (null = نأكدوه معاك)، وسلاگ المنتوج اللي يتفتح فورمو.",
+  "sizes": [
+    {
+      "w": 90,
+      "l": 190,
+      "label": "90×190 سم"
+    },
+    {
+      "w": 140,
+      "l": 190,
+      "label": "140×190 سم"
+    },
+    {
+      "w": 160,
+      "l": 200,
+      "label": "160×200 سم"
+    }
+  ],
+  "prices": {
+    "90": {
+      "coffre": null,
+      "sans": null
+    },
+    "140": {
+      "coffre": null,
+      "sans": null
+    },
+    "160": {
+      "coffre": null,
+      "sans": null
+    }
+  },
+  "paintExtra": 0,
+  "slugs": {
+    "coffre": {
+      "paint": "lit-coffre",
+      "natural": "lit-coffre"
+    },
+    "sans": {
+      "90": "sommier",
+      "140": "sommier",
+      "160": "sommier"
+    }
+  }
+}

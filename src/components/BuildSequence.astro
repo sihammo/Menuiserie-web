@@ -1,17 +1,12 @@
 ---
 import stats from '../data/stats.json';
 // القصة: من المخطط إلى السرير. كل فصل مربوط بجزء من السكرول (src/scripts/build-sequence).
+// 3 سكرولات: 1) من المخطط للسرير  2) وماشي غير السرير  3) نوصلو وين ما بغيت. beat = رقم السكرول.
 const chapters = [
-  { title: 'كل قطعة تبدا بمخطط', text: '', note: 'مقاس 90 × 190', tag: 'h1' },
-  { title: 'نختارو الخشب لوح بلوح', text: '', note: 'علامة الطباشير = لوح مقبول' },
-  { title: 'نقصو على المقاس', text: '', note: 'نقيسو زوج مرات، نقصو مرة' },
-  { title: 'نركبو قطعة بقطعة', text: '', note: 'كل زاوية بزوج vis' },
-  { title: 'الصباغة باليد', text: '', note: 'زوج طبقات' },
-  { title: 'مساحة تخزين مخفية', text: '', note: 'خفيفة في اليد' },
-  { title: 'وماشي غير السرير', text: '', note: 'قولنا واش تحب' },
-  { title: 'نحملوه بعناية', text: '', note: 'مغلف ومحمي' },
-  { title: 'نوصلو لأبعد نقطة في الجزائر', text: '', note: `التوصيل ${stats.deliveryText}` },
-  { title: 'أرقام الورشة', text: '', note: 'الثقة تتبنى بالخدمة' },
+  { title: 'كل قطعة تبدا بمخطط', text: '', note: 'مقاس 90 × 190', tag: 'h1', beat: 1 },
+  { title: 'من لوح خشب لسرير', text: '', note: 'نركبو قطعة بقطعة، ونصبغو باليد', beat: 1 },
+  { title: 'وماشي غير السرير', text: '', note: 'خزانات، طاولات... قولنا واش تحب', beat: 2 },
+  { title: 'نوصلو وين ما بغيت', text: '', note: 'لكل ولايات الجزائر', beat: 3 },
 ];
 ---
 <section class="build" id="build" aria-label="كيفاش يتبنى السرير">
@@ -149,7 +144,7 @@ const chapters = [
           <p class="mc-now"><span>الكاميو الآن في</span> <b data-mapstop>عين البيضة</b></p>
           <div class="mc-bar"><span data-mapbar></span></div>
           <p class="mc-km"><b data-kmcount dir="ltr">0</b> كم من <bdi data-kmtotal>0</bdi></p>
-          <p class="badge">توصيل {stats.deliveryText}</p>
+          <p class="badge">توصيل لكل ولايات الجزائر</p>
         </div>
       </div>
       <ul class="stats">
@@ -163,7 +158,7 @@ const chapters = [
     <div class="copy">
       {chapters.map((c, i) => (
         <div class="chap" data-chap={i}>
-          <span class="step">{i + 1} / {chapters.length}</span>
+          <span class="step">{c.beat} / 3</span>
           {c.tag === 'h1' ? <h1>{c.title}</h1> : <h2>{c.title}</h2>}
           {c.text && <p>{c.text}</p>}
           <p class="hand">{c.note}</p>
@@ -182,7 +177,7 @@ const chapters = [
 </section>
 
 <style>
-  .build{position:relative;height:515vh;background:var(--shadow)}
+  .build{position:relative;height:400vh;background:var(--shadow)}
   .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
   .paper{position:absolute;inset:0;background:url(/textures/kraft.jpg) center/cover var(--kraft);color:var(--graphite);display:flex;align-items:center;justify-content:flex-end;padding:6vh 3vw}
   .paper::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 18vmax rgba(60,40,20,.35);pointer-events:none}
@@ -274,7 +269,7 @@ const chapters = [
     .chap .hand{font-size:1.3rem}
     .counter{top:4vh;gap:1.4rem}
     .counter dd{font-size:1.3rem}
-    .build{height:620vh}
+    .build{height:470vh}
     .mapcard{top:2.5vh;inset-inline:4vw;width:auto;padding:.6rem .9rem}.mini{width:4.6rem}.mc-now b{font-size:1.15rem}.badge{margin-top:.4rem}
     .mapview .scene{top:19%;bottom:34%}
     .truck2d{left:0;width:100vw}.stats{top:14vh;bottom:auto;inset-inline:5vw;padding:1rem 1.2rem;gap:.8rem 1.4rem}

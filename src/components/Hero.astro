@@ -1,0 +1,124 @@
+---
+// الهيرو: 3 سكرولات (لوح ← سرير ← الغرفة ← التوصيل) ومن بعد ديريكت المنتوجات.
+// كل الصور والنصوص في src/config/heroCampaign.ts — هنا غير الهيكل.
+import { heroCampaign as c } from '../config/heroCampaign';
+const items = (Array.isArray(c.step2.complementaryItemsImg) ? c.step2.complementaryItemsImg : [c.step2.complementaryItemsImg]).slice(0, 3);
+const steps = [
+  { ar: c.intro.titleAr, fr: c.intro.titleFr },
+  { ar: c.step1.titleAr, fr: c.step1.titleFr },
+  { ar: c.step2.titleAr, fr: c.step2.titleFr },
+];
+---
+<section class="hero" id="hero" aria-label="من اللوح للسرير، ومن الورشة لدارك">
+  <canvas class="stage3d" aria-hidden="true"></canvas>
+  <div class="scene" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="floor"></div>
+
+    <div class="items">
+      {items.map((src, i) => (
+        <figure class="item" data-i={i} data-n={items.length}>
+          <img src={src} alt="" loading="eager" decoding="async" />
+        </figure>
+      ))}
+    </div>
+
+    <figure class="frame">
+      <img class="raw" src={c.step1.rawMaterialImg} alt="" fetchpriority="high" decoding="async" />
+      <img class="product" src={c.step1.heroProductImg} alt="" decoding="async" />
+    </figure>
+
+    <div class="road"><span></span></div>
+    <img class="van" src={c.step3.deliveryVehicleImg} alt="" decoding="async" />
+  </div>
+
+  <div class="copy">
+    {steps.map((s, i) => (
+      <div class="line" data-step={i}>
+        {i === 0 ? <h1>{s.ar}</h1> : <p class="h">{s.ar}</p>}
+        <p class="fr" lang="fr" dir="ltr">{s.fr}</p>
+      </div>
+    ))}
+  </div>
+
+  <div class="slogan">
+    <p class="ar">{c.step3.sloganAr}</p>
+    <p class="fr" lang="fr" dir="ltr">{c.step3.sloganFr}</p>
+    <a class="btn" href={c.cta.href}>{c.cta.labelAr}</a>
+  </div>
+
+  <ol class="dots" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
+  <p class="hint">هبط ↓</p>
+
+  <!-- للقارئات الصوتية ومحركات البحث -->
+  <p class="sr">{c.step1.heroProductAlt}. {c.step2.complementaryAlt}. {c.step3.sloganAr}.</p>
+</section>
+
+<style>
+  .hero{position:relative;height:100vh;height:100svh;overflow:hidden;background:radial-gradient(120% 90% at 50% 40%,#3a2c20 0%,var(--shadow) 70%);color:var(--kraft-light)}
+  .scene{position:absolute;inset:0;perspective:1400px;perspective-origin:50% 40%}
+  .stage3d{position:absolute;inset:0;width:100%;height:100%;display:none}
+  .hero.is3d .stage3d{display:block}
+  .hero.is3d .scene{display:none}
+  .hero.is3d .copy .line h1,.hero.is3d .copy .line .h{text-shadow:0 2px 18px rgba(20,14,8,.85)}
+  .glow{position:absolute;inset:-20%;background:radial-gradient(40% 35% at 50% 45%,rgba(255,200,130,.22),transparent 70%)}
+  .floor{position:absolute;left:-10%;right:-10%;bottom:0;height:34%;background:linear-gradient(180deg,rgba(110,59,28,0),rgba(110,59,28,.35));opacity:0}
+
+  /* اللوح ← المنتوج: نفس الإطار، يتبدل شكلو والصورة اللي فيه */
+  .frame{position:absolute;left:50%;top:46%;width:min(68vw,640px);height:min(14vw,130px);margin:0;transform:translate(-50%,-50%) rotateX(58deg) rotateZ(-8deg);transform-style:preserve-3d;border-radius:6px;overflow:hidden;box-shadow:0 40px 60px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);background:#2a2018;will-change:transform,width,height}
+  .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .frame .product{opacity:0}
+
+  .items{position:absolute;inset:0}
+  .item{position:absolute;left:50%;top:48%;width:min(22vw,250px);aspect-ratio:4/5;margin:0;border:6px solid #F3E9D2;border-bottom-width:18px;box-shadow:0 30px 40px -24px rgba(0,0,0,.85);opacity:0;transform:translate(-50%,-50%)}
+  .item img{width:100%;height:100%;object-fit:cover}
+
+  .road{position:absolute;left:0;right:0;bottom:16%;height:2px;background:rgba(227,211,180,.25);opacity:0}
+  .road span{position:absolute;inset:-1px 0;background:repeating-linear-gradient(90deg,var(--pine) 0 28px,transparent 28px 64px);opacity:.7}
+  .van{position:absolute;bottom:14.5%;left:0;width:min(46vw,520px);height:auto;transform:translateX(110vw);will-change:transform}
+
+  .copy{position:absolute;inset-inline-start:6vw;top:14vh;width:min(32rem,42vw)}
+  .line{position:absolute;top:0;inset-inline-start:0;opacity:0;visibility:hidden}
+  .line[data-step="0"]{opacity:1;visibility:visible}
+  .line h1,.line .h{font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,4.4vw,4rem);line-height:1.15;color:var(--kraft-light);margin:0}
+  .fr{font-family:var(--latin);font-size:clamp(1rem,1.4vw,1.25rem);color:var(--pine);opacity:.8;margin-top:.5rem}
+
+  .slogan{position:absolute;left:0;right:0;top:14vh;text-align:center;opacity:0;visibility:hidden;padding-inline:5vw}
+  .slogan .ar{font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,8vw,7rem);line-height:1.05;color:var(--kraft-light);text-shadow:0 6px 30px rgba(0,0,0,.5)}
+  .slogan .fr{font-size:clamp(1.05rem,1.8vw,1.5rem)}
+  .slogan .btn{margin-top:1.4rem}
+
+  .dots{position:absolute;inset-inline-end:3vw;top:50%;transform:translateY(-50%);list-style:none;padding:0;display:grid;gap:.7rem}
+  .dots li{width:8px;height:8px;border-radius:50%;background:rgba(227,211,180,.3);transition:background .3s,transform .3s}
+  .dots li.on{background:var(--pine);transform:scale(1.4)}
+  .hint{position:absolute;bottom:3vh;left:50%;transform:translateX(-50%);font-size:.9rem;opacity:.65}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  @media (max-width:760px){
+    .copy{top:auto;bottom:17vh;width:auto;inset-inline-end:6vw}
+    .frame{top:38%;width:84vw;height:16vw}
+    .item{width:28vw;top:40%;border-width:4px;border-bottom-width:12px}
+    .van{width:78vw;bottom:24%}
+    .road{bottom:25.5%}
+    .slogan{top:auto;bottom:13vh}
+    .dots{top:auto;bottom:3vh;transform:none;inset-inline-end:6vw;grid-auto-flow:column}
+    .hint{display:none}
+  }
+
+  /* بلا حركة: نعرضو كلش ثابت */
+  .hero.static{height:auto;overflow:visible;padding:4rem 0}
+  .hero.static .scene{position:relative;height:70vh}
+  .hero.static .frame{width:min(60vw,420px);height:auto;aspect-ratio:4/5;transform:translate(-50%,-50%)}
+  .hero.static .frame .raw{opacity:0}
+  .hero.static .frame .product{opacity:1}
+  .hero.static .copy,.hero.static .slogan,.hero.static .line{position:relative;inset:auto;top:auto;width:auto;opacity:1;visibility:visible;padding:0 6vw;margin-bottom:1.5rem}
+  .hero.static .items,.hero.static .van,.hero.static .road,.hero.static .dots,.hero.static .hint,.hero.static .glow,.hero.static .floor{display:none}
+</style>
+
+<script>
+  // 3D (اللوح يولي سرير…) إذا التيليفون يقدر، وإلا نسخة الصور (hero.js)
+  import { initHero3D } from '../scripts/hero3d.js';
+  import { initHero } from '../scripts/hero.js';
+  const el = document.getElementById('hero');
+  if (!initHero3D(el)) initHero(el);
+</script>

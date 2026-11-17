@@ -1,0 +1,101 @@
+---
+import cfg from '../data/configurator.json';
+import { getProduct, listProducts } from '../lib/store.js';
+
+// السلاگ لازم يكون موجود ومتوفر، وإلا نرجعو لأول منتوج متوفر
+const fallback = listProducts().find((p) => p.available !== false)?.slug || null;
+const pick = (s) => { const p = getProduct(s); return p && p.available !== false ? s : fallback; };
+const data = {
+  sizes: cfg.sizes,
+  prices: cfg.prices,
+  paintExtra: cfg.paintExtra,
+  slugs: {
+    coffre: { paint: pick(cfg.slugs.coffre.paint), natural: pick(cfg.slugs.coffre.natural) },
+    sans: Object.fromEntries(Object.entries(cfg.slugs.sans).map(([k, v]) => [k, pick(v)])),
+  },
+};
+---
+<section class="cfg" id="rakeb" aria-labelledby="cfg-titre">
+  <div class="wrap">
+    <h2 id="cfg-titre">ركّب سريرك</h2>
+    <p class="lead">اختار المقاس والصندوق واللون، وشوف السرير يتبدل قدامك. وملي يعجبك اطلبو بضغطة.</p>
+    <div class="grid">
+      <div class="stagebox">
+        <canvas class="cfg-canvas" role="img" aria-label="سرير ثلاثي الأبعاد، اسحب باش تدوره"></canvas>
+        <img class="cfg-fallback" src="/images/lit-coffre.jpg" alt="سرير بصندوق تخزين" width="600" height="750" loading="lazy" hidden />
+        <p class="drag" aria-hidden="true">اسحب باش تدور السرير</p>
+        <button type="button" class="cfg-open" aria-pressed="false">افتح الصندوق</button>
+      </div>
+
+      <form class="panel cfg-form" onsubmit="return false">
+        <fieldset>
+          <legend>المقاس</legend>
+          <div class="opts">
+            {cfg.sizes.map((s, i) => (
+              <label class="chip"><input type="radio" name="size" value={s.w} data-label={s.label} checked={s.w === 140 || (i === 0 && !cfg.sizes.some((x) => x.w === 140))} /><span><bdi dir="ltr">{s.w}×{s.l}</bdi></span></label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>الصندوق</legend>
+          <div class="opts">
+            <label class="chip"><input type="radio" name="coffre" value="yes" data-label="بصندوق تخزين" checked /><span>بصندوق تخزين</span></label>
+            <label class="chip"><input type="radio" name="coffre" value="no" data-label="بلا صندوق (قاعدة بالأرجل)" /><span>بلا صندوق</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>اللون</legend>
+          <div class="opts">
+            <label class="chip"><input type="radio" name="color" value="paint" data-label="مصبوغ (جوز)" checked /><span><i class="sw sw-paint"></i>مصبوغ</span></label>
+            <label class="chip"><input type="radio" name="color" value="natural" data-label="خشب طبيعي" /><span><i class="sw sw-nat"></i>طبيعي</span></label>
+          </div>
+        </fieldset>
+
+        <div class="result" aria-live="polite">
+          <p class="cfg-summary"></p>
+          <p class="cfg-price hand"></p>
+        </div>
+        <a class="btn cfg-order" href="#produits">اطلب هذا ←</a>
+        <p class="small">ما تخلصش دوك. نتصلو بيك لتأكيد الطلب والتوصيل.</p>
+      </form>
+    </div>
+  </div>
+  <script id="cfg-data" type="application/json" set:html={JSON.stringify(data)} />
+</section>
+
+<style>
+  .cfg{background:url(/textures/kraft.jpg) center/cover var(--kraft);padding:4.5rem 0 5rem}
+  h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+  .lead{max-width:46ch;margin-top:.4rem}
+  .grid{display:grid;grid-template-columns:1.25fr 1fr;gap:2.5rem;margin-top:2rem;align-items:start}
+  .stagebox{position:relative;height:clamp(440px,72vh,620px);background:radial-gradient(ellipse at 50% 60%,#F3E9D2 0%,#E3D3B4 70%);box-shadow:0 18px 30px -18px rgba(40,25,10,.55);overflow:hidden;border-radius:2px}
+  .cfg-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+  .cfg-canvas:active{cursor:grabbing}
+  .cfg-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .cfg-fallback[hidden],.cfg-canvas[hidden],.cfg-open[hidden]{display:none}
+  .drag{position:absolute;inset-inline:0;bottom:.8rem;text-align:center;font-size:.85rem;color:var(--walnut);opacity:.8;pointer-events:none}
+  .cfg-open{position:absolute;top:1rem;inset-inline-start:1rem;font:inherit;font-weight:600;cursor:pointer;background:var(--walnut);color:var(--kraft-light);border:0;padding:.55rem 1.1rem;border-radius:3px;box-shadow:0 2px 0 #3d2010}
+  .cfg-open[aria-pressed="true"]{background:var(--mark)}
+  .panel{background:#F3E9D2;padding:1.8rem;display:grid;gap:1.3rem;align-content:start;box-shadow:0 18px 30px -20px rgba(40,25,10,.5)}
+  fieldset{border:0;padding:0;margin:0;min-width:0}
+  legend{font-family:var(--display);font-weight:700;font-size:1.15rem;margin-bottom:.5rem;padding:0}
+  .opts{display:flex;flex-wrap:wrap;gap:.6rem}
+  .chip{position:relative;cursor:pointer}
+  .chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;margin:0}
+  .chip span{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1rem;border:1.5px solid #8c6b45;background:#fbf6ea;border-radius:3px;font-weight:500;transition:background .15s,color .15s}
+  .chip input:checked + span{background:var(--walnut);color:var(--kraft-light);border-color:var(--walnut)}
+  .chip input:focus-visible + span{outline:3px solid var(--mark);outline-offset:2px}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.35)}
+  .sw-paint{background:#5a3219}.sw-nat{background:#E4C995}
+  .result{border-top:1.5px dashed #8c6b45;padding-top:1rem}
+  .cfg-summary{font-weight:600}
+  .cfg-price{font-size:1.4rem;margin-top:.2rem}
+  .cfg-order{text-align:center}
+  .small{font-size:.85rem;opacity:.75}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}.stagebox{height:420px}}
+</style>
+
+<script>
+  import { initConfigurator } from '../scripts/configurator/index.js';
+  initConfigurator(document.querySelector('.cfg'));
+</script>

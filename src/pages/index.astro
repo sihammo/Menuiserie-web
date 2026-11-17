@@ -1,19 +1,21 @@
 ---
 export const prerender = false; // المنتوجات تتحمل من الأدمن
 import Base from '../layouts/Base.astro';
-import BuildSequence from '../components/BuildSequence.astro';
+import Hero from '../components/Hero.astro';
+import Configurator from '../components/Configurator.astro';
 import ProductsBar from '../components/ProductsBar.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
 import Trust from '../components/Trust.astro';
 import Woods from '../components/Woods.astro';
-import Workshop from '../components/Workshop.astro';
 ---
 <Base title="Chemami Meuble Nadhir — أثاث من الورشة، عين البيضة" description="أسرة بصندوق تخزين، قواعد سرير وطاولات جانبية، مصنوعة باليد في ورشتنا بعين البيضة، أم البواقي. توصيل لـ 69 ولاية.">
   <main>
-    <BuildSequence />
+    <Hero />
     <ProductsBar />
+    <Configurator />
+    <BeforeAfter />
     <Trust />
     <Woods />
-    <Workshop />
   </main>
   <footer>
     <div class="wrap cols">

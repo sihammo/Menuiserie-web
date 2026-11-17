@@ -42,6 +42,10 @@ const { slug } = Astro.props;
   const form = document.getElementById('order-form') as HTMLFormElement;
   const err = form.querySelector('.err') as HTMLElement;
   const btn = form.querySelector('button') as HTMLButtonElement;
+  // اختيارات «ركّب سريرك» تجي في الرابط وتتكتب في الملاحظة
+  const sel = new URLSearchParams(location.search).get('sel');
+  const noteEl = form.querySelector('textarea[name="note"]') as HTMLTextAreaElement;
+  if (sel && noteEl && !noteEl.value) noteEl.value = sel.slice(0, 160);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     err.hidden = true;

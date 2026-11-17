@@ -1,7 +1,112 @@
 [
-  { "slug": "lit-coffre", "name": "سرير بصندوق تخزين", "wood": "صنوبر + MDF مصبوغ", "price": null, "image": "/images/lit-coffre.jpg" },
-  { "slug": "sommier", "name": "قاعدة سرير بالأرجل", "wood": "صنوبر طبيعي", "price": null, "image": "/images/sommier.jpg" },
-  { "slug": "table-chevet", "name": "طاولة جانبية بدرجين", "wood": "صنوبر + MDF", "price": null, "image": "/images/chevets.jpg" },
-  { "slug": "lit-coffre-brut", "name": "سرير بصندوق، صنوبر خام", "wood": "صنوبر طبيعي", "price": null, "image": "/images/lit-coffre.jpg" },
-  { "slug": "sommier-double", "name": "قاعدة سرير مزدوجة", "wood": "صنوبر طبيعي", "price": null, "image": "/images/sommier.jpg" }
+  {
+    "slug": "lit-rose-carres",
+    "name": "سرير منجّد وردي",
+    "wood": "تنجيد قماش",
+    "desc": "راس بمربعات وجوانب مبلّعة.",
+    "price": null,
+    "image": "/images/lits/rose-carre.jpg"
+  },
+  {
+    "slug": "lit-02",
+    "name": "سرير رقم 02",
+    "wood": "خشب أبيض + راس منجّد وردي",
+    "price": null,
+    "image": "/images/lits/n02.jpg"
+  },
+  {
+    "slug": "lit-beige-lignes",
+    "name": "سرير منجّد بيج",
+    "wood": "تنجيد قماش",
+    "desc": "راس بخطوط عمودية وجوانب مبلّعة.",
+    "price": null,
+    "image": "/images/lits/beige-lignes.jpg"
+  },
+  {
+    "slug": "lit-20",
+    "name": "سرير رقم 20",
+    "wood": "خشب بلون الجوز + راس منجّد رمادي",
+    "price": null,
+    "image": "/images/lits/n20.jpg"
+  },
+  {
+    "slug": "lit-gris",
+    "name": "سرير منجّد رمادي",
+    "wood": "تنجيد قماش",
+    "desc": "راس بثلاث خطوط عمودية.",
+    "price": null,
+    "image": "/images/lits/gris.jpg"
+  },
+  {
+    "slug": "lit-04",
+    "name": "سرير رقم 04",
+    "wood": "خشب أبيض + راس منجّد وردي بالأزرار",
+    "price": null,
+    "image": "/images/lits/n04.jpg"
+  },
+  {
+    "slug": "lit-rose-vagues",
+    "name": "سرير منجّد بالموجات",
+    "wood": "تنجيد قماش",
+    "desc": "راس بموجات وجوانب مبلّعة.",
+    "price": null,
+    "image": "/images/lits/rose-vagues.jpg"
+  },
+  {
+    "slug": "lit-07",
+    "name": "سرير رقم 07",
+    "wood": "خشب أبيض + راس منجّد رمادي بالأزرار",
+    "price": null,
+    "image": "/images/lits/n07.jpg"
+  },
+  {
+    "slug": "lit-creme",
+    "name": "سرير منجّد كريمي",
+    "wood": "تنجيد قماش",
+    "desc": "راس بخطوط عمودية وجوانب مبلّعة.",
+    "price": null,
+    "image": "/images/lits/creme.jpg"
+  },
+  {
+    "slug": "lit-14",
+    "name": "سرير رقم 14",
+    "wood": "خشب أبيض + راس منجّد أزرق",
+    "price": null,
+    "image": "/images/lits/n14.jpg"
+  },
+  {
+    "slug": "lit-08",
+    "name": "سرير رقم 08",
+    "wood": "خشب أبيض + راس منجّد بيج",
+    "price": null,
+    "image": "/images/lits/n08.jpg"
+  },
+  {
+    "slug": "lit-17",
+    "name": "سرير رقم 17",
+    "wood": "خشب أبيض + راس منجّد أزرق بالأزرار",
+    "price": null,
+    "image": "/images/lits/n17.jpg"
+  },
+  {
+    "slug": "lit-coffre",
+    "name": "سرير بصندوق تخزين",
+    "wood": "صنوبر + MDF مصبوغ",
+    "price": null,
+    "image": "/images/lit-coffre.jpg"
+  },
+  {
+    "slug": "sommier",
+    "name": "قاعدة سرير بالأرجل",
+    "wood": "صنوبر طبيعي",
+    "price": null,
+    "image": "/images/sommier.jpg"
+  },
+  {
+    "slug": "table-chevet",
+    "name": "طاولة جانبية بدرجين",
+    "wood": "صنوبر + MDF",
+    "price": null,
+    "image": "/images/chevets.jpg"
+  }
 ]
